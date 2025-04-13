@@ -109,6 +109,22 @@
         text-align: center;
       }
       
+      /* Add this new CSS for equations */
+      .equation p {
+        margin-bottom: 0.5rem;
+      }
+      
+      .equation p:last-child {
+        margin-bottom: 0;
+      }
+      
+      /* Improve MathJax rendering */
+      .MathJax {
+        overflow-x: auto;
+        overflow-y: hidden;
+        max-width: 100%;
+      }
+      
       .team-member {
         margin-bottom: 15px;
       }
@@ -253,6 +269,9 @@
                 <a href="#conclusion" class="chapter-link">10. Conclusion</a>
                 <a href="#acknowledgments" class="chapter-link">11. Acknowledgments</a>
                 <a href="#references" class="chapter-link">12. References</a>
+                <a href="model.html" class="chapter-link">13. Robot Model Demo</a>
+                <a href="simulation.html" class="chapter-link">14. RoboDK Simulation</a>
+                <a href="gripper.html" class="chapter-link">15. 3-Finger Adaptive Gripper</a>
             </div>
 
             <div class="col-lg-9 col-xl-10 vlabs-page-content px-5 pb-4 flex-grow-1 markdown-body">
@@ -429,34 +448,324 @@ where:
                     <h4>4.4.3 Precision Placement with Hierarchical Inverse Kinematics</h4>
                     <p>For precise placement of pipes into molds, we employ hierarchical inverse kinematics:</p>
                     <div class="equation">
-where:
-- (x_pixel, y_pixel) is the center of the detected bounding box
-- (c_x, c_y) are the principal point coordinates
-- f_x, f_y are the focal lengths
-- Z is the estimated depth to the object
-                        </pre>
-                    </div>
-                    
-                    <h4>4.4.2 Optimal Force Control for Adaptive Gripping</h4>
-                    <p>We implement a constant-force adaptive grasping algorithm based on nonlinear beam theory and optimization techniques:</p>
-                    <div class="equation">
-                        <p>Compliant Beam ODE:</p>
-                        <p>ψ″ = (h·sin(ψ) + v·cos(ψ)) / (E·I)</p>
-                        <p>where:</p>
-                        <p>ψ is the beam angle, E is the elastic modulus,</p>
-                        <p>I is the moment of inertia, h and v are external forces</p>
-                    </div>
-                    <p>This model is solved using the shooting method and optimized with genetic algorithms and sequential quadratic programming (SQP) to ensure constant force application regardless of pipe diameter variations.</p>
-                    
-                    <h4>4.4.3 Precision Placement with Hierarchical Inverse Kinematics</h4>
-                    <p>For precise placement of pipes into molds, we employ hierarchical inverse kinematics:</p>
-                    <div class="equation">
                         <p>Δθ = J<sup>T</sup>(JJ<sup>T</sup> + λ<sup>2</sup>I)<sup>-1</sup>e</p>
                         <p>where:</p>
                         <p>J is the Jacobian matrix, e is the task error vector,</p>
                         <p>λ is a damping factor, and Δθ is the joint correction</p>
                     </div>
                     <p>We use the Orthogonal Procrustes Problem for alignment optimization, ensuring precise positioning despite variations in pipe dimensions.</p>
+                </div>
+
+                <h1 id="advanced-mathematical-foundations">8. Advanced Mathematical Foundations</h1>
+                <div class="method-section">
+                    <p>This section provides comprehensive explanations of the key mathematical concepts powering our automated PVC coupling system. Each topic is explained from first principles with detailed derivations and visualizations to ensure accessibility without requiring specialized background knowledge.</p>
+                    
+                    <h3>8.1 Compliant Beam Theory for Adaptive Gripping</h3>
+                    
+                    <h4>8.1.1 Understanding Beam Deflection: First Principles</h4>
+                    <p>At its core, compliant beam theory describes how a flexible beam (like a finger in our gripper) bends under applied forces. Let's start with the fundamentals:</p>
+                    
+                    <div class="equation">
+                        <p>When a beam bends, its curvature (κ) relates to the moment (M) through:</p>
+                        <p>$$\kappa = \frac{M}{EI}$$</p>
+                    </div>
+                    
+                    <p>Where:</p>
+                    <ul>
+                        <li>E = Young's modulus (material stiffness)</li>
+                        <li>I = Moment of inertia (beam's resistance to bending)</li>
+                    </ul>
+                    
+                    <div class="data-flow-diagram">
+                        <img src="./assets/images/beam_bending_basics.png" alt="Basic beam bending showing curvature relation to bending moment" style="width: 85%;">
+                        <p><em>Figure 8.1: Fundamental relation between force, bending moment, and beam curvature</em></p>
+                    </div>
+                    
+                    <h4>8.1.2 From Linear to Nonlinear Beam Theory</h4>
+                    <p>For small deflections, the curvature can be approximated as:</p>
+                    
+                    <div class="equation">
+                        <p>$\kappa \approx \frac{d^2y}{dx^2}$</p>
+                    </div>
+                    
+                    <p>However, for our gripper with large deflections, we need the exact curvature:</p>
+                    
+                    <div class="equation">
+                        <p>$\kappa = \frac{d\psi}{ds} = \frac{d\psi/dx}{\sqrt{1+(dy/dx)^2}}$</p>
+                    </div>
+                    
+                    <p>Where:</p>
+                    <ul>
+                        <li>ψ = angle of the beam's tangent</li>
+                        <li>s = arc length along the beam</li>
+                    </ul>
+                    
+                    <p>For a beam under combined forces, the governing equation becomes:</p>
+                    
+                    <div class="equation">
+                        <p>$\frac{d^2\psi}{ds^2} = \frac{h\sin\psi + v\cos\psi}{EI}$</p>
+                    </div>
+                    
+                    <h4>8.1.3 Solving the Nonlinear Beam Equation</h4>
+                    <p>This nonlinear equation doesn't have a simple analytical solution. We convert it to a system of first-order ODEs:</p>
+                    
+                    <div class="equation">
+                        <p>$\frac{d\psi}{ds} = \psi'$</p>
+                        <p>$\frac{d\psi'}{ds} = \frac{h\sin\psi + v\cos\psi}{EI}$</p>
+                        <p>$\frac{dx}{ds} = \cos\psi$</p>
+                        <p>$\frac{dy}{ds} = \sin\psi$</p>
+                    </div>
+                    
+                    <p>We use the "shooting method" to solve this boundary value problem:</p>
+                    
+                    <div class="code-block">
+<pre>
+def solve_beam_bvp(E, I, h, v, L, theta_guess):
+    """
+    Solve beam deflection using shooting method.
+    
+    Parameters:
+    - E, I: Material properties
+    - h, v: Horizontal and vertical forces
+    - L: Beam length
+    - theta_guess: Initial guess for angle at s=0
+    
+    Returns:
+    - Complete beam solution
+    """
+    def ode_system(s, y):
+        psi, psi_prime, x, y_pos = y
+        psi_double_prime = (h * np.sin(psi) + v * np.cos(psi)) / (E * I)
+        return [psi_prime, psi_double_prime, np.cos(psi), np.sin(psi)]
+    
+    # Initial conditions with our guess
+    y0 = [theta_guess, 0, 0, 0]
+    
+    # Solve ODE
+    solution = solve_ivp(ode_system, [0, L], y0, method='RK45', rtol=1e-6)
+    
+    return solution
+</pre>
+                    </div>
+                    
+                    <div class="data-flow-diagram">
+                        <img src="./assets/images/beam_shooting_method.png" alt="Illustration of shooting method for beam deflection" style="width: 90%;">
+                        <p><em>Figure 8.2: Shooting method iteratively finds the initial angle θ₀ that satisfies the boundary conditions</em></p>
+                    </div>
+                    
+                    <h4>8.1.4 Optimizing for Constant Force</h4>
+                    <p>Our key innovation is creating a gripper that applies <em>constant force</em> regardless of pipe diameter. This is formulated as an optimization problem:</p>
+                    
+                    <div class="equation">
+                        <p>$\min_{\mathbf{p}} \left( \max_{d \in D} F(d, \mathbf{p}) - \min_{d \in D} F(d, \mathbf{p}) \right)^2$</p>
+                    </div>
+                    
+                    <p>Where:</p>
+                    <ul>
+                        <li>p = design parameters vector [L₁, L₂, c₁, c₂]</li>
+                        <li>d = pipe diameter</li>
+                        <li>D = set of possible pipe diameters</li>
+                        <li>F(d,p) = force applied to pipe with parameters p</li>
+                    </ul>
+                    
+                    <div class="data-flow-diagram">
+                        <img src="./assets/images/constant_force_optimization.png" alt="Constant force optimization results" style="width: 85%;">
+                        <p><em>Figure 8.3: Optimized gripper design maintains near-constant force across all pipe diameters</em></p>
+                    </div>
+                    
+                    <h3>8.2 Hierarchical Inverse Kinematics with Nullspace Projection</h3>
+                    
+                    <h4>8.2.1 Forward Kinematics: The Foundation</h4>
+                    <p>Before understanding inverse kinematics, we need to grasp forward kinematics: how joint angles determine the end-effector position.</p>
+                    
+                    <p>For our 2-DOF arm, the end-effector position (x,y) is related to joint angles (θ₁,θ₂) by:</p>
+                    
+                    <div class="equation">
+                        <p>$x = L_1\cos\theta_1 + L_2\cos(\theta_1+\theta_2)$</p>
+                        <p>$y = L_1\sin\theta_1 + L_2\sin(\theta_1+\theta_2)$</p>
+                    </div>
+                    
+                    <div class="data-flow-diagram">
+                        <img src="./assets/images/forward_kinematics.png" alt="Forward kinematics mapping joint angles to end-effector position" style="width: 75%;">
+                        <p><em>Figure 8.4: Forward kinematics maps joint angles to the end-effector position</em></p>
+                    </div>
+                    
+                    <h4>8.2.2 The Jacobian Matrix: Relating Velocities</h4>
+                    <p>The Jacobian matrix (J) relates joint velocities to end-effector velocities:</p>
+                    
+                    <div class="equation">
+                        <p>$\begin{bmatrix} \dot{x} \\ \dot{y} \end{bmatrix} = \begin{bmatrix} 
+                        -L_1\sin\theta_1 - L_2\sin(\theta_1+\theta_2) & -L_2\sin(\theta_1+\theta_2) \\
+                        L_1\cos\theta_1 + L_2\cos(\theta_1+\theta_2) & L_2\cos(\theta_1+\theta_2)
+                        \end{bmatrix} \begin{bmatrix} \dot{\theta}_1 \\ \dot{\theta}_2 \end{bmatrix}$</p>
+                        <p>$\dot{\mathbf{x}} = J(\theta) \dot{\theta}$</p>
+                    </div>
+                    
+                    <h4>8.2.3 Basic Inverse Kinematics Problem</h4>
+                    <p>Inverse kinematics finds joint angles to reach a desired position. Given a target position change Δx, we need joint changes Δθ:</p>
+                    
+                    <div class="equation">
+                        <p>$\Delta\theta = J^{-1}\Delta\mathbf{x}$</p>
+                    </div>
+                    
+                    <p>However, two problems arise:</p>
+                    <ol>
+                        <li>J might not be invertible (when at singularities)</li>
+                        <li>With redundant robots, multiple solutions exist</li>
+                    </ol>
+                    
+                    <h4>8.2.4 Damped Least Squares Solution</h4>
+                    <p>Instead of direct inversion, we use damped least squares:</p>
+                    
+                    <div class="equation">
+                        <p>$\Delta\theta = J^T(JJ^T + \lambda^2I)^{-1}\Delta\mathbf{x}$</p>
+                    </div>
+                    
+                    <p>Where λ is a damping factor that stabilizes the solution near singularities.</p>
+                    
+                    <div class="code-block">
+<pre>
+def compute_damped_least_squares(J, dx, lambd=0.01):
+    """
+    Compute joint movements using Damped Least Squares.
+    
+    Parameters:
+    - J: Jacobian matrix
+    - dx: Desired end-effector movement
+    - lambd: Damping factor
+    
+    Returns:
+    - dtheta: Joint angle changes
+    """
+    J_T = J.T
+    term = J @ J_T + (lambd**2) * np.eye(J.shape[0])
+    dtheta = J_T @ np.linalg.inv(term) @ dx
+    return dtheta
+</pre>
+                    </div>
+                    
+                    <h4>8.2.5 Nullspace and Task Hierarchies</h4>
+                    <p>For robots with redundant degrees of freedom, the nullspace represents joint movements that don't affect the end-effector position. The nullspace projector is:</p>
+                    
+                    <div class="equation">
+                        <p>$N = I - J^{\dagger}J$</p>
+                    </div>
+                    
+                    <p>We can exploit this for hierarchical tasks. If we have a primary task (position) and a secondary task (e.g., joint limits), we solve:</p>
+                    
+                    <div class="equation">
+                        <p>$\Delta\theta = J_1^{\dagger}\Delta\mathbf{x}_1 + N_1(J_2N_1)^{\dagger}(\Delta\mathbf{x}_2 - J_2J_1^{\dagger}\Delta\mathbf{x}_1)$</p>
+                    </div>
+                    
+                    <div class="data-flow-diagram">
+                        <img src="./assets/images/nullspace_visualization.png" alt="Visualization of nullspace movements" style="width: 90%;">
+                        <p><em>Figure 8.5: Visualization of how nullspace movements change joint configuration without affecting the end-effector position</em></p>
+                    </div>
+                    
+                    <h3>8.3 Orthogonal Procrustes Problem for Mold Alignment</h3>
+                    
+                    <h4>8.3.1 The Alignment Challenge</h4>
+                    <p>When placing a pipe into a mold, we need to align two sets of points: points on the pipe and corresponding points on the mold. This is precisely what the Orthogonal Procrustes Problem solves.</p>
+                    
+                    <h4>8.3.2 Mathematical Formulation</h4>
+                    <p>Given two sets of points (X and Y), find the rotation matrix R that minimizes:</p>
+                    
+                    <div class="equation">
+                        <p>$\min_{R \in SO(3)} \|RX - Y\|_F^2$</p>
+                    </div>
+                    
+                    <p>Where:</p>
+                    <ul>
+                        <li>X = 3×n matrix of points on the pipe</li>
+                        <li>Y = 3×n matrix of corresponding points on the mold</li>
+                        <li>R = 3×3 rotation matrix</li>
+                        <li>‖·‖<sub>F</sub> = Frobenius norm</li>
+                    </ul>
+                    
+                    <h4>8.3.3 Centering the Point Sets</h4>
+                    <p>First, we center both point sets by subtracting their means:</p>
+                    
+                    <div class="code-block">
+<pre>
+def center_points(X):
+    """Center points around origin by subtracting mean."""
+    mean = np.mean(X, axis=1, keepdims=True)
+    X_centered = X - mean
+    return X_centered, mean
+</pre>
+                    </div>
+                    
+                    <h4>8.3.4 Solution via Singular Value Decomposition (SVD)</h4>
+                    <p>The solution involves these steps:</p>
+                    <ol>
+                        <li>Compute the covariance matrix H = X·Y<sup>T</sup></li>
+                        <li>Find the SVD of H: H = U·Σ·V<sup>T</sup></li>
+                        <li>Compute R = V·U<sup>T</sup></li>
+                    </ol>
+                    
+                    <div class="equation">
+                        <p>$H = X Y^T = U \Sigma V^T$</p>
+                        <p>$R = V U^T$</p>
+                    </div>
+                    
+                    <p>If det(R) = -1, we need to ensure a proper rotation by flipping the sign of the last column of V.</p>
+                    
+                    <div class="code-block">
+<pre>
+def solve_orthogonal_procrustes(X, Y):
+    """
+    Find optimal rotation matrix to align X with Y.
+    
+    Parameters:
+    - X: Source points (3×n matrix)
+    - Y: Target points (3×n matrix)
+    
+    Returns:
+    - R: Optimal rotation matrix
+    - t: Translation vector
+    """
+    # Center the point sets
+    X_centered, X_mean = center_points(X)
+    Y_centered, Y_mean = center_points(Y)
+    
+    # Compute covariance matrix
+    H = X_centered @ Y_centered.T
+    
+    # SVD decomposition
+    U, _, Vt = np.linalg.svd(H)
+    
+    # Ensure proper rotation (det(R) = 1)
+    V = Vt.T
+    det_UV = np.linalg.det(V @ U.T)
+    
+    if det_UV < 0:
+        V[:, -1] = -V[:, -1]
+    
+    # Compute optimal rotation
+    R = V @ U.T
+    
+    # Compute translation
+    t = Y_mean - R @ X_mean
+    
+    return R, t
+</pre>
+                    </div>
+                    
+                    <div class="data-flow-diagram">
+                        <img src="./assets/images/procrustes_alignment.png" alt="Procrustes alignment of pipe to mold" style="width: 85%;">
+                        <p><em>Figure 8.6: Orthogonal Procrustes solution finds the optimal rotation to align pipe with mold</em></p>
+                    </div>
+                    
+                    <h4>8.3.5 Practical Application in Our System</h4>
+                    <p>We use this algorithm to:</p>
+                    <ul>
+                        <li>Identify key points on the pipe end using computer vision</li>
+                        <li>Match them with predetermined points on the mold</li>
+                        <li>Calculate the optimal rotation for perfect alignment</li>
+                        <li>Apply this rotation to position the pipe precisely before insertion</li>
+                    </ul>
+                    
+                    <p>This mathematical foundation ensures that even with manufacturing variations in pipes or slight positioning errors, we achieve precise alignment every time.</p>
                 </div>
 
                 <h1 id="technical-implementation">5. Technical Implementation</h1>
@@ -889,142 +1198,6 @@ def detect_pvc_pipes(image, confidence_threshold=0.5):
                     </tr>
                 </table>
 
-                <h1 id="advanced-mathematical-foundations">8. Advanced Mathematical Foundations</h1>
-                <div class="method-section">
-                    <h3>8.1 Compliant Beam Theory for Adaptive Gripping</h3>
-                    <p>The mathematical model for our adaptive gripper is based on nonlinear large-deflection beam theory. The governing equation for a beam with variable cross-section under distributed load can be expressed as:</p>
-                    
-                    <div class="equation">
-                        <p>$\frac{d^2\psi}{ds^2} = \frac{M(s)}{EI(s)}$</p>
-                    </div>
-                    
-                    <p>Where:</p>
-                    <ul>
-                        <li>$\psi(s)$ is the beam's angular deflection at arc length $s$</li>
-                        <li>$M(s)$ is the bending moment at position $s$</li>
-                        <li>$E$ is Young's modulus of the gripper material</li>
-                        <li>$I(s)$ is the variable moment of inertia along the beam</li>
-                    </ul>
-                    
-                    <p>For our application with PVC pipes, we model the bending moment as:</p>
-                    
-                    <div class="equation">
-                        <p>$M(s) = F_x(L-s)\sin\psi(s) + F_y(L-s)\cos\psi(s)$</p>
-                    </div>
-                    
-                    <p>This leads to the nonlinear ODE system implemented in our code:</p>
-                    
-                    <div class="code-block">
-<pre>
-def compliant_beam_ode(u, y, E, I, h, v):
-    """
-    Nonlinear ODE system for compliant beam deformation.
-    
-    Parameters:
-    - u: Arc length parameter
-    - y: State vector [ψ, ψ', x, y]
-    - E: PVC gripper elastic modulus
-    - I: Moment of inertia
-    - h, v: External forces (x, y)
-    
-    Returns:
-    - dydu: Derivative of the state vector
-    """
-    psi, psi_prime, x, y_coord = y
-    psi_double_prime = (h * np.sin(psi) + v * np.cos(psi)) / (E * I)
-    return [psi_prime, psi_double_prime, np.cos(psi), np.sin(psi)]
-</pre>
-                    </div>
-                    
-                    <p>The optimization problem for force control can be formulated as:</p>
-                    
-                    <div class="equation">
-                        <p>$\min_{\mathbf{p}} \left| \max_{d \in D} F(d, \mathbf{p}) - \min_{d \in D} F(d, \mathbf{p}) \right|$</p>
-                        <p>subject to: $\mathbf{p}{\text{min}} \leq \mathbf{p} \leq \mathbf{p}{\text{max}}$</p>
-                    </div>
-                    
-                    <p>Where:</p>
-                    <ul>
-                        <li>$\mathbf{p}$ is the parameter vector [L1, L2, c1, c2] for the compliant mechanism</li>
-                        <li>$D$ is the set of possible PVC pipe diameters</li>
-                        <li>$F(d, \mathbf{p})$ is the force applied by the gripper with parameters $\mathbf{p}$ on a pipe with diameter $d$</li>
-                    </ul>
-                    
-                    <h3>8.2 Hierarchical Inverse Kinematics with Nullspace Projection</h3>
-                    <p>Our inverse kinematics approach uses a hierarchical task framework to ensure precise pipe placement while maintaining secondary objectives. The mathematical formulation follows:</p>
-                    
-                    <p>For a primary task of exact positioning and a secondary task of joint limit avoidance, we compute:</p>
-                    
-                    <div class="equation">
-                        <p>$\Delta \theta = J_1^{\dagger} e_1 + N_1 J_2^{\dagger} e_2$</p>
-                    </div>
-                    
-                    <p>Where:</p>
-                    <ul>
-                        <li>$J_1^{\dagger}$ is the damped pseudoinverse of the primary task Jacobian</li>
-                        <li>$e_1$ is the primary task error (placement error)</li>
-                        <li>$N_1 = I - J_1^{\dagger} J_1$ is the nullspace projector of the primary task</li>
-                        <li>$J_2^{\dagger}$ is the damped pseudoinverse of the secondary task Jacobian</li>
-                        <li>$e_2$ is the secondary task error (joint limit avoidance)</li>
-                    </ul>
-                    
-                    <p>The damped pseudoinverse is computed as:</p>
-                    
-                    <div class="equation">
-                        <p>$J^{\dagger} = J^T (J J^T + \lambda^2 I)^{-1}$</p>
-                    </div>
-                    
-                    <p>Where $\lambda$ is a damping factor that stabilizes the solution near singularities, critical for reliable pipe placement.</p>
-                    
-                    <h3>8.3 Orthogonal Procrustes Problem for Mold Alignment</h3>
-                    <p>To achieve precise alignment between the pipe and mold despite variations, we solve the Orthogonal Procrustes Problem:</p>
-                    
-                    <div class="equation">
-                        <p>$\min_{R \in SO(3)} \|R X - Y\|_F$</p>
-                    </div>
-                    
-                    <p>Where:</p>
-                    <ul>
-                        <li>$X$ is the set of points on the pipe end</li>
-                        <li>$Y$ is the set of corresponding points on the mold</li>
-                        <li>$R$ is a rotation matrix in the special orthogonal group $SO(3)$</li>
-                        <li>$\|\cdot\|_F$ is the Frobenius norm</li>
-                    </ul>
-                    
-                    <p>The solution is obtained via singular value decomposition (SVD):</p>
-                    
-                    <div class="code-block">
-<pre>
-def compute_optimal_rotation(X, Y):
-    """
-    Compute optimal rotation matrix for aligning pipe with mold.
-    
-    Parameters:
-    - X: Points on pipe end (3×n matrix)
-    - Y: Corresponding points on mold (3×n matrix)
-    
-    Returns:
-    - R: Optimal rotation matrix
-    """
-    # Compute covariance matrix
-    H = X @ Y.T
-    
-    # SVD decomposition
-    U, S, Vt = np.linalg.svd(H)
-    
-    # Compute optimal rotation
-    R = Vt.T @ U.T
-    
-    # Ensure proper rotation (det(R) = 1)
-    if np.linalg.det(R) < 0:
-        Vt[-1,:] *= -1
-        R = Vt.T @ U.T
-        
-    return R
-</pre>
-                    </div>
-                </div>
-
                 <h1 id="experimental-results">9. Experimental Results</h1>
                 <div class="method-section">
                     <h3>9.1 Performance Metrics</h3>
@@ -1174,7 +1347,32 @@ def compute_optimal_rotation(X, Y):
                     </ol>
                 </div>
 
-                <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+                <script>
+                  window.MathJax = {
+                    tex: {
+                      inlineMath: [['$', '$'], ['\\(', '\\)']],
+                      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                      processEscapes: true
+                    },
+                    svg: {
+                      fontCache: 'global'
+                    },
+                    startup: {
+                      ready: function() {
+                        MathJax.startup.defaultReady();
+                      }
+                    }
+                  };
+                </script>
+                <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+                <script>
+                  // Force MathJax to typeset when page is fully loaded
+                  window.addEventListener('load', function() {
+                    if (typeof MathJax !== 'undefined') {
+                      MathJax.typeset();
+                    }
+                  });
+                </script>
             </div>
         </div>
     </div>
