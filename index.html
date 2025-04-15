@@ -370,15 +370,14 @@
                     <h3>4.1 Overview</h3>
                     <p>Our approach integrates advanced robotics, computer vision, and mathematical modeling to create a fully automated PVC hot water coupling system. This comprehensive methodology combines theoretical foundations with practical implementation to address the challenges of pipe detection, adaptive gripping, and precision placement.</p>
                     
-                    <h3>4.2 Novel Approach: Flat Surface Assumption</h3>
-                    <p>Traditional automation systems rely on vertical interfaces where pipes must be manually positioned. Our approach introduces a flat surface layout that fundamentally simplifies the automation process:</p>
+                    <h3>4.2 Flat Surface Layout Approach</h3>
+                    <p>Our system utilizes a flat surface layout that simplifies the automation process:</p>
                     <div class="algorithm-box">
-                        <h4>Key Innovations in Flat Surface Design:</h4>
+                        <h4>Key Advantages of Flat Surface Design:</h4>
                         <ul>
                             <li><strong>Enhanced Object Detection:</strong> YOLOv8 can identify pipes more effectively when placed on a flat plane due to consistent lighting and reduced occlusion.</li>
                             <li><strong>Simplified Grasping Mechanics:</strong> A three-fingered adaptive gripper can reliably secure pipes from above, eliminating complex side-grasping requirements.</li>
                             <li><strong>Uniform Robotic Movement:</strong> The robotic arm maintains consistent movement patterns, reducing the complexity of path planning and control algorithms.</li>
-                            <li><strong>Scalable Workspace:</strong> The flat layout allows for easy expansion of the working area to accommodate increased production requirements.</li>
                         </ul>
                     </div>
                     
@@ -387,7 +386,7 @@
                     
                     <h4>4.3.1 Degrees of Freedom (DOF)</h4>
                     <ul>
-                        <li><strong>2-DOF Design:</strong> The robotic arm utilizes Left-Right and Up-Down movement axes for simple yet effective control.</li>
+                        <li><strong>4-DOF Design:</strong> While our robot has 6-DOF capabilities, we utilize 4 DOF for effective control of the PVC coupling process.</li>
                         <li><strong>Fixed Downward-Facing End Effector:</strong> This configuration ensures consistent picking and placement operations without requiring complex orientation adjustments.</li>
                     </ul>
                     
@@ -395,14 +394,12 @@
                     <ul>
                         <li><strong>Centrally Mounted Camera:</strong> A high-resolution camera mounted at the center of the end effector provides a real-time view of pipes and molds.</li>
                         <li><strong>YOLOv8 Integration:</strong> The advanced object detection model identifies pipes and outputs precise location data in real-world coordinates.</li>
-                        <li><strong>Depth Estimation:</strong> Computer vision algorithms calculate distances to objects for accurate 3D positioning.</li>
                     </ul>
                     
                     <h4>4.3.3 Gripper Mechanism</h4>
                     <ul>
                         <li><strong>Three-Fingered Adaptive Design:</strong> The gripper applies mathematically optimized force to securely hold pipes without slippage or deformation.</li>
                         <li><strong>Variable Diameter Accommodation:</strong> The system automatically adjusts to pipes of different sizes without manual reconfiguration.</li>
-                        <li><strong>Force Feedback Control:</strong> Sensors monitor applied force to prevent damage to softened PVC material.</li>
                     </ul>
                     
                     <h3>4.4 Compliant Beam Theory for Adaptive Gripping</h3>
@@ -550,672 +547,225 @@ optimal_shape = differential_evolution(force_variation, bounds)</pre>
                     
                     <h4>4.5.1 Forward Kinematics: The Foundation</h4>
                     <p>Before understanding inverse kinematics, we need to grasp forward kinematics: how joint angles determine the end-effector position.</p>
-                    
-                    <p>For our 2-DOF arm, the end-effector position (x,y) is related to joint angles (θ₁,θ₂) by:</p>
-                    
-                    <div class="equation">
-                        <p>$$x = L_1\cos\theta_1 + L_2\cos(\theta_1+\theta_2)$$</p>
-                        <p>$$y = L_1\sin\theta_1 + L_2\sin(\theta_1+\theta_2)$$</p>
-                    </div>
-                    
-                    <div class="data-flow-diagram">
-                        <img src="./assets/images/forward_kinematics.png" alt="Forward kinematics mapping joint angles to end-effector position" style="width: 75%;">
-                        <p><em>Figure 4.2: Forward kinematics maps joint angles to the end-effector position</em></p>
-                    </div>
-                    
-                    <h4>4.5.2 The Jacobian Matrix: Relating Velocities</h4>
-                    <p>The Jacobian matrix (J) relates joint velocities to end-effector velocities:</p>
-                    
-                    <div class="equation">
-                        <p>$$\begin{bmatrix} \dot{x} \\ \dot{y} \end{bmatrix} = \begin{bmatrix} 
-                        -L_1\sin\theta_1 - L_2\sin(\theta_1+\theta_2) & -L_2\sin(\theta_1+\theta_2) \\
-                        L_1\cos\theta_1 + L_2\cos(\theta_1+\theta_2) & L_2\cos(\theta_1+\theta_2)
-                        \end{bmatrix} \begin{bmatrix} \dot{\theta}_1 \\ \dot{\theta}_2 \end{bmatrix}$$</p>
-                        <p>$$\dot{\mathbf{x}} = J(\theta) \dot{\theta}$$</p>
-                    </div>
-                    
-                    <h4>4.5.3 Basic Inverse Kinematics Problem</h4>
-                    <p>Inverse kinematics finds joint angles to reach a desired position. Given a target position change Δx, we need joint changes Δθ:</p>
-                    
-                    <div class="equation">
-                        <p>$$\Delta\theta = J^{-1}\Delta\mathbf{x}$$</p>
-                    </div>
-                    
-                    <p>However, two problems arise:</p>
-                    <ol>
-                        <li>J might not be invertible (when at singularities)</li>
-                        <li>With redundant robots, multiple solutions exist</li>
-                    </ol>
-                    
-                    <h4>4.5.4 Implementation: Damped Least Squares Solution</h4>
-                    <p>Instead of direct inversion, we use damped least squares:</p>
-                    
-                    <div class="equation">
-                        <p>$$\Delta\theta = J^T(JJ^T + \lambda^2I)^{-1}\Delta\mathbf{x}$$</p>
-                    </div>
-                    
-                    <p>Where λ is a damping factor that stabilizes the solution near singularities.</p>
-                    
-                    <div class="code-block">
-<pre>import numpy as np
 
-def damped_least_squares(J, e, damping=0.01):
-    """
-    Compute joint movements using Damped Least Squares for stable pipe placement.
-    
-    Parameters:
-    - J: Jacobian matrix (m x n)
-    - e: Error vector (m x 1) - distance from current to target position
-    - damping: Stability parameter to avoid singularities
-    
-    Returns:
-    - Joint movements for precise pipe positioning
-    """
-    JT = J.T
-    I = np.eye(J.shape[0])  # Identity matrix
-    damped_term = JT @ np.linalg.inv(J @ JT + (damping**2) * I)
-    delta_theta = damped_term @ e
-    return delta_theta</pre>
-                    </div>
-                    
-                    <h4>4.5.5 Hierarchical Task-Based IK with Priority Projection</h4>
-                    <p>For robots with redundant degrees of freedom, the nullspace represents joint movements that don't affect the end-effector position. The nullspace projector is:</p>
-                    
+                    <p>For our robotic arm, the end-effector position (𝐱) is related to joint angles (𝛉) by the forward kinematics function:</p>
+
                     <div class="equation">
-                        <p>$$N = I - J^{\dagger}J$$</p>
+                        <p>$$\mathbf{x} = f(\boldsymbol{\theta})$$</p>
                     </div>
-                    
-                    <p>We can exploit this for hierarchical tasks. If we have a primary task (position) and a secondary task (e.g., joint limits), we solve:</p>
-                    
+
+                    <p>This nonlinear function maps configurations in joint space to positions in task space.</p>
+
+                    <h4>4.5.2 The Jacobian Matrix: Relating Velocities</h4>
+                    <p>The Jacobian matrix (J) linearizes the relationship between joint velocities and end-effector velocities:</p>
+
                     <div class="equation">
-                        <p>$$\Delta\theta = J_1^{\dagger}\Delta\mathbf{x}_1 + N_1(J_2N_1)^{\dagger}(\Delta\mathbf{x}_2 - J_2J_1^{\dagger}\Delta\mathbf{x}_1)$$</p>
+                        <p>$$\Delta \mathbf{x} = \mathbf{J} \Delta \boldsymbol{\theta}$$</p>
                     </div>
-                    
-                    <div class="data-flow-diagram">
-                        <img src="./assets/images/nullspace_visualization.png" alt="Visualization of nullspace movements" style="width: 90%;">
-                        <p><em>Figure 4.3: Visualization of how nullspace movements change joint configuration without affecting the end-effector position</em></p>
-                    </div>
-                    
-                    <div class="code-block">
-<pre>def hierarchical_ik_solver(J_tasks, e_tasks, damping=0.01):
-    """
-    Compute inverse kinematics with task prioritization for pipe placement.
-    
-    Parameters:
-    - J_tasks: List of Jacobian matrices ordered by priority
-    - e_tasks: List of error vectors ordered by priority
-    
-    Returns:
-    - Optimized joint movements respecting task hierarchy
-    """
-    num_joints = J_tasks[0].shape[1]
-    delta_q = np.zeros(num_joints)
-    N = np.eye(num_joints)  # Nullspace projector
-    
-    for J, e in zip(J_tasks, e_tasks):
-        J_effective = J @ N  # Project current task into nullspace
-        delta_theta = damped_least_squares(J_effective, e, damping)
-        delta_q += delta_theta
-        N -= J_effective.T @ np.linalg.pinv(J_effective)  # Update nullspace
-    
-    return delta_q</pre>
-                    </div>
-                    
-                    <h3>4.6 Orthogonal Procrustes Problem for Mold Alignment</h3>
-                    
-                    <h4>4.6.1 The Alignment Challenge</h4>
-                    <p>When placing a pipe into a mold, we need to align two sets of points: points on the pipe and corresponding points on the mold. This is precisely what the Orthogonal Procrustes Problem solves.</p>
-                    
-                    <h4>4.6.2 Mathematical Formulation</h4>
-                    <p>Given two sets of points (X and Y), find the rotation matrix R that minimizes:</p>
-                    
-                    <div class="equation">
-                        <p>$$\min_{R \in SO(3)} \|RX - Y\|_F^2$$</p>
-                    </div>
-                    
+
                     <p>Where:</p>
                     <ul>
-                        <li>X = 3×n matrix of points on the pipe</li>
-                        <li>Y = 3×n matrix of corresponding points on the mold</li>
-                        <li>R = 3×3 rotation matrix</li>
-                        <li>‖·‖<sub>F</sub> = Frobenius norm</li>
+                        <li>∆𝐱 is the desired change in end-effector position</li>
+                        <li>∆𝛉 is the required change in joint angles</li>
+                        <li>J is the Jacobian matrix (m×n for m task dimensions and n joints)</li>
                     </ul>
-                    
-                    <h4>4.6.3 Implementation: SVD Solution for Optimal Alignment</h4>
-                    <p>The solution involves these steps:</p>
-                    <ol>
-                        <li>Compute the covariance matrix H = X·Y<sup>T</sup></li>
-                        <li>Find the SVD of H: H = U·Σ·V<sup>T</sup></li>
-                        <li>Compute R = V·U<sup>T</sup></li>
-                    </ol>
-                    
+
+                    <h4>4.5.3 Basic Inverse Kinematics Problem</h4>
+                    <p>Inverse kinematics finds joint angles to reach a desired position. Ideally, we want:</p>
+
                     <div class="equation">
-                        <p>$$H = X Y^T = U \Sigma V^T$$</p>
-                        <p>$$R = V U^T$$</p>
+                        <p>$$\Delta \boldsymbol{\theta} = \mathbf{J}^{\dagger} \Delta \mathbf{x}$$</p>
                     </div>
-                    
-                    <div class="code-block">
-<pre>def center_points(X):
-    """Center points around origin by subtracting mean."""
-    mean = np.mean(X, axis=1, keepdims=True)
-    X_centered = X - mean
-    return X_centered, mean
 
-def solve_orthogonal_procrustes(X, Y):
-    """
-    Find optimal rotation matrix to align X with Y.
-    
-    Parameters:
-    - X: Source points (3×n matrix)
-    - Y: Target points (3×n matrix)
-    
-    Returns:
-    - R: Optimal rotation matrix
-    - t: Translation vector
-    """
-    # Center the point sets
-    X_centered, X_mean = center_points(X)
-    Y_centered, Y_mean = center_points(Y)
-    
-    # Compute covariance matrix
-    H = X_centered @ Y_centered.T
-    
-    # SVD decomposition
-    U, _, Vt = np.linalg.svd(H)
-    
-    # Ensure proper rotation (det(R) = 1)
-    V = Vt.T
-    det_UV = np.linalg.det(V @ U.T)
-    
-    if det_UV < 0:
-        V[:, -1] = -V[:, -1]
-    
-    # Compute optimal rotation
-    R = V @ U.T
-    
-    # Compute translation
-    t = Y_mean - R @ X_mean
-    
-    return R, t</pre>
-                    </div>
-                    
-                    <div class="data-flow-diagram">
-                        <img src="./assets/images/procrustes_alignment.png" alt="Procrustes alignment of pipe to mold" style="width: 85%;">
-                        <p><em>Figure 4.4: Orthogonal Procrustes solution finds the optimal rotation to align pipe with mold</em></p>
-                    </div>
-                    
-                    <h3>4.7 AI-Based Pipe Detection System</h3>
-                    
-                    <h4>4.7.1 YOLOv8-Based PVC Pipe Detection</h4>
-                    <p>We implement a robust computer vision system for detecting PVC pipes in real-time:</p>
-                    
-                    <div class="algorithm-box">
-                        <h4>Implementation Features:</h4>
-                        <ul class="feature-list">
-                            <li>YOLOv8 integration for real-time object detection</li>
-                            <li>Custom-trained model specifically for PVC pipe recognition</li>
-                            <li>Precise bounding box extraction for accurate localization</li>
-                            <li>Confidence thresholding to ensure reliable detection</li>
-                            <li>2D-to-3D coordinate conversion for robotic control</li>
-                        </ul>
-                        
-                        <div class="implementation-step">
-                            <h4>YOLOv8 Detection Implementation</h4>
-                            <div class="code-block">
-<pre>from ultralytics import YOLO
-import cv2
-
-def detect_pvc_pipes(image, confidence_threshold=0.5):
-    """
-    Detect PVC pipes in images using our custom-trained YOLOv8 model.
-    
-    Parameters:
-    - image: Input camera image from robotic arm
-    - confidence_threshold: Minimum detection confidence
-    
-    Returns:
-    - List of detected PVC pipes with bounding boxes
-    """
-    # Load our custom PVC pipe detection model
-    model = YOLO("pvc_pipe_detector.pt")
-    
-    # Run inference
-    results = model(image, conf=confidence_threshold)
-    
-    # Extract detections
-    detections = []
-    for r in results:
-        for box in r.boxes.data:
-            x1, y1, x2, y2, conf, cls = box.tolist()
-            detections.append({
-                "bbox": (x1, y1, x2, y2), 
-                "confidence": conf, 
-                "class_id": int(cls)
-            })
-    
-    return detections</pre>
-                            </div>
-                        </div>
-                        
-                        <div class="implementation-step">
-                            <h4>3D Coordinate Conversion for Robotic Control</h4>
-                            <div class="code-block">
-<pre>def convert_to_3d_coordinates(bbox, camera_matrix, depth=0.1):
-    """
-    Convert 2D bounding box to 3D real-world coordinates for robot gripper.
-    
-    Parameters:
-    - bbox: (x1, y1, x2, y2) bounding box from YOLOv8
-    - camera_matrix: Camera calibration matrix
-    - depth: Estimated depth from camera to PVC pipe
-    
-    Returns:
-    - (x, y, z) 3D world coordinates for robotic arm
-    """
-    x1, y1, x2, y2 = bbox
-    center_x, center_y = (x1 + x2) / 2, (y1 + y2) / 2
-    
-    # Convert using camera intrinsics
-    fx, fy = camera_matrix[0, 0], camera_matrix[1, 1]
-    cx, cy = camera_matrix[0, 2], camera_matrix[1, 2]
-    
-    # Calculate 3D coordinates
-    x = (center_x - cx) * depth / fx
-    y = (center_y - cy) * depth / fy
-    z = depth
-    
-    return (x, y, z)</pre>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <h3>4.8 Smooth Motion Planning</h3>
-                    <p>We implement a trajectory planning algorithm that ensures smooth robotic arm movement for reliable pipe handling:</p>
-                    
-                    <div class="algorithm-box">
-                        <h4>Implementation Features:</h4>
-                        <ul class="feature-list">
-                            <li>5th-order minimum jerk trajectory for smooth motion</li>
-                            <li>Continuous velocity and acceleration profiles</li>
-                            <li>Optimal time parameterization for efficient movements</li>
-                            <li>Boundary conditions ensuring smooth starts and stops</li>
-                        </ul>
-                        
-                        <div class="implementation-step">
-                            <h4>Minimum Jerk Polynomial Trajectory Implementation</h4>
-                            <div class="code-block">
-<pre>def compute_minimum_jerk_trajectory(q_start, q_end, T, steps=100):
-    """
-    Compute a 5th-order polynomial trajectory for smooth PVC pipe handling.
-    
-    Parameters:
-    - q_start: Starting position
-    - q_end: Target position (pipe or mold)
-    - T: Total duration of motion
-    - steps: Number of trajectory points
-    
-    Returns:
-    - Position, velocity, and acceleration trajectories
-    """
-    # Time vector
-    t = np.linspace(0, T, steps)
-    
-    # Boundary conditions matrix
-    A = np.array([
-        [1, 0, 0, 0, 0, 0],                 # q(0) = q_start
-        [0, 1, 0, 0, 0, 0],                 # qd(0) = 0
-        [0, 0, 2, 0, 0, 0],                 # qdd(0) = 0
-        [1, T, T**2, T**3, T**4, T**5],     # q(T) = q_end
-        [0, 1, 2*T, 3*T**2, 4*T**3, 5*T**4],  # qd(T) = 0
-        [0, 0, 2, 6*T, 12*T**2, 20*T**3]    # qdd(T) = 0
-    ])
-    
-    b = np.array([q_start, 0, 0, q_end, 0, 0])  # Boundary conditions
-    
-    # Solve for polynomial coefficients
-    coeffs = np.linalg.solve(A, b)
-    
-    # Compute trajectories
-    q_traj = np.polyval(coeffs[::-1], t)         # Position
-    qd_traj = np.polyval(np.polyder(coeffs[::-1]), t)  # Velocity
-    qdd_traj = np.polyval(np.polyder(np.polyder(coeffs[::-1])), t)  # Acceleration
-    
-    return q_traj, qd_traj, qdd_traj</pre>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <h3>4.9 Integration of Components</h3>
-                    <p>The full system integration combines these mathematical foundations and implementations into a cohesive automation pipeline:</p>
-                    
+                    <p>Where J<sup>†</sup> is the pseudo-inverse of J. However, two fundamental problems arise:</p>
                     <ol>
-                        <li><strong>Pipe Detection:</strong> YOLOv8 detects PVC pipes and converts coordinates to 3D space</li>
-                        <li><strong>Path Planning:</strong> Generates smooth minimum-jerk trajectories for optimal arm movement</li>
-                        <li><strong>Gripping:</strong> Applies constant force through compliant beam optimization</li>
-                        <li><strong>Alignment:</strong> Uses Procrustes analysis to determine optimal rotation for mold insertion</li>
-                        <li><strong>Precision Placement:</strong> Executes the insertion with hierarchical IK control</li>
+                        <li><strong>Singularities:</strong> At certain configurations, J becomes ill-conditioned or singular</li>
+                        <li><strong>Redundancy:</strong> With redundant robots (more DOF than needed), multiple solutions exist</li>
                     </ol>
-                    
-                    <p>This integrated approach combines theoretical foundations with practical implementation, creating a robust system capable of handling variations in pipe dimensions, lighting conditions, and positioning while maintaining consistent quality throughout the coupling process.</p>
+
+                    <h4>4.5.4 Implementation: Damped Least Squares Solution</h4>
+                    <p>To address singularities, we use the Damped Least Squares (DLS) method, derived from Tikhonov regularization. We minimize:</p>
+
+                    <div class="equation">
+                        <p>$$\min_{\Delta\theta} \|J\Delta\theta - \Delta\mathbf{x}\|^2 + \lambda^2\|\Delta\theta\|^2$$</p>
+                    </div>
+
+                    <p>Where the first term minimizes position error and the second term penalizes large joint movements. The solution is:</p>
+
+                    <div class="equation">
+                        <p>$$\Delta \boldsymbol{\theta} = \mathbf{J}^\top \left( \mathbf{J} \mathbf{J}^\top + \lambda^2 \mathbf{I} \right)^{-1} \mathbf{e}$$</p>
+                    </div>
+
+                    <p>Where λ is the damping factor and e is the position error vector.</p>
+
+                    <h4>4.5.5 Hierarchical Task-Based IK with Nullspace Projection</h4>
+                    <p>For robots with redundant degrees of freedom, we can achieve multiple objectives simultaneously through task prioritization. The <em>nullspace</em> of the Jacobian represents joint movements that don't affect the end-effector position:</p>
+
+                    <div class="equation">
+                        <p>$$\mathcal{N}(\mathbf{J}) = \{ \Delta \boldsymbol{\theta} \ | \ \mathbf{J} \Delta \boldsymbol{\theta} = 0 \}$$</p>
+                    </div>
+
+                    <p>The nullspace projector (P) is defined as:</p>
+
+                    <div class="equation">
+                        <p>$$\mathbf{P} = \mathbf{I} - \mathbf{J}^{\dagger}\mathbf{J}$$</p>
+                    </div>
+
+                    <p>For hierarchical tasks, we solve them sequentially with decreasing priority:</p>
+
+                    <ol>
+                        <li>Solve the primary task: ∆θ<sub>1</sub> = J<sub>1</sub><sup>†</sup>e<sub>1</sub></li>
+                        <li>Compute nullspace projector: P<sub>1</sub> = I − J<sub>1</sub><sup>†</sup>J<sub>1</sub></li>
+                        <li>Project secondary task into nullspace: J<sub>2,eff</sub> = J<sub>2</sub>P<sub>1</sub></li>
+                        <li>Solve secondary task in nullspace: ∆θ<sub>2</sub> = (J<sub>2,eff</sub>)<sup>†</sup>e<sub>2</sub></li>
+                        <li>Combined solution: ∆θ = ∆θ<sub>1</sub> + ∆θ<sub>2</sub></li>
+                    </ol>
+
+                    <p>This approach ensures higher-priority tasks are never compromised by lower-priority ones.</p>
+
+                    <div class="data-flow-diagram">
+                        <img src="./assets/Keerthi/nullspace_visualization.png" alt="Visualization of nullspace movements">
+                        <p><em>Figure 4.3: Visualization of how nullspace movements change joint configuration without affecting the end-effector position</em></p>
+                    </div>
                 </div>
 
                 <h1 id="technical-implementation">5. Technical Implementation</h1>
                 <div class="method-section">
-                    <h3>5.1 Algorithm 1: Compliant Constant-Force Adaptive Grasping</h3>
-                    <p>This algorithm ensures a constant gripping force using a compliant mechanism, optimized for handling PVC pipes without damage:</p>
-                    
-                    <div class="algorithm-box">
-                        <h4>Implementation Features:</h4>
-                        <ul class="feature-list">
-                            <li>Mathematical force optimization without reliance on PID control</li>
-                            <li>Compliant mechanism modeling with nonlinear beam theory</li>
-                            <li>Boundary value problem (BVP) solving using the shooting method</li>
-                            <li>Optimization via Genetic Algorithm and Sequential Quadratic Programming</li>
-                            <li>Physics-based force application in PyBullet for realistic simulation</li>
-                        </ul>
-                        
-                        <div class="implementation-step">
-                            <h4>Step 1: Mathematical Modeling of Compliant Beam Deformation</h4>
-                            <div class="code-block">
-<pre>import numpy as np
-from scipy.integrate import solve_ivp
-
-def compliant_beam_ode(u, y, E, I, h, v):
-    """
-    Nonlinear ODE system for compliant beam deformation in our gripper.
-    
-    Parameters:
-    - u: Arc length parameter
-    - y: State vector [ψ, ψ', x, y]
-    - E: PVC elastic modulus
-    - I: Moment of inertia
-    - h, v: External forces (x, y)
-    """
-    psi, psi_prime, x, y_coord = y
-    psi_double_prime = (h * np.sin(psi) + v * np.cos(psi)) / (E * I)
-    return [psi_prime, psi_double_prime, np.cos(psi), np.sin(psi)]</pre>
-                            </div>
-                        </div>
-                        
-                        <div class="implementation-step">
-                            <h4>Step 2: Genetic Algorithm for Shape Optimization</h4>
-                            <div class="code-block">
-<pre>from scipy.optimize import differential_evolution
-
-def force_variation(params):
-    """
-    Objective function: Minimize force variation when gripping PVC pipes.
-    """
-    L1, L2, c1, c2 = params
-    E, I = 2.6e9, 1e-6  # PVC material properties
-    displacement_range = np.linspace(0.7, 2.2, 5)  # Typical pipe diameters
-    
-    forces = []
-    for disp in displacement_range:
-        solution = solve_compliant_beam(E, I, h=5, v=disp)
-        forces.append(np.abs(solution.y[1][-1]))  # Force at end
-
-    # Aim for constant force regardless of pipe diameter
-    force_diff = np.max(forces) - np.min(forces)
-    return force_diff
-
-# Optimize using Genetic Algorithm
-bounds = [(4, 6), (4, 6), (-3, 3), (-3, 3)]  # Parameter bounds
-optimal_shape = differential_evolution(force_variation, bounds)</pre>
-                            </div>
-                        </div>
-                        
-                        <div class="implementation-step">
-                            <h4>Step 3: Apply Optimized Force Control to Gripper</h4>
-                            <div class="code-block">
-<pre>import pybullet as p
-
-def apply_compliant_grasping(robot_id, gripper_joints, optimal_params):
-    """
-    Apply optimized grasping force to the PVC pipe
-    """
-    L1, L2, c1, c2 = optimal_params
-    force_output = 7.9  # Optimized constant force
-    
-    for joint in gripper_joints:
-        p.setJointMotorControl2(
-            bodyUniqueId=robot_id,
-            jointIndex=joint,
-            controlMode=p.TORQUE_CONTROL,
-            force=force_output
-        )</pre>
-                            </div>
-                        </div>
-                    </div>
-                    
                     <h3>5.2 Algorithm 2: Hierarchical Inverse Kinematics for Precision Placement</h3>
-                    <p>Based on the paper "Inverse Kinematics of High Dimensional Robotic Arm-Hand Systems for Precision Grasping," we implement a hierarchical IK approach for precise pipe placement:</p>
+                    <p>We implement a class-based hierarchical IK solver that handles multiple tasks with different priorities:</p>
                     
                     <div class="algorithm-box">
                         <h4>Implementation Features:</h4>
                         <ul class="feature-list">
-                            <li>Task prioritization with primary focus on precise positioning</li>
-                            <li>Nullspace projection to handle multiple simultaneous objectives</li>
-                            <li>Damped Least Squares method for stable joint control</li>
-                            <li>Avoidance of kinematic singularities during movement</li>
-                            <li>Smooth trajectory generation for reliable pipe handling</li>
+                            <li>Object-oriented design for reusable IK functionality</li>
+                            <li>Task prioritization with proper nullspace projection</li>
+                            <li>Damped least squares for singularity robustness</li>
+                            <li>Matrix operations optimized with NumPy</li>
+                            <li>Clear separation of mathematical components</li>
                         </ul>
                         
                         <div class="implementation-step">
-                            <h4>Step 1: Damped Least Squares (DLS) IK Solver</h4>
+                            <h4>Complete Hierarchical IK Solver Implementation</h4>
                             <div class="code-block">
 <pre>import numpy as np
 
-def damped_least_squares(J, e, damping=0.01):
+class HierarchicalIKSolver:
     """
-    Compute joint movements using Damped Least Squares for stable pipe placement.
-    
-    Parameters:
-    - J: Jacobian matrix (m x n)
-    - e: Error vector (m x 1) - distance from current to target position
-    - damping: Stability parameter to avoid singularities
-    
-    Returns:
-    - Joint movements for precise pipe positioning
+    A class for solving Hierarchical Inverse Kinematics (IK) problems with Nullspace Projection.
+    This solver handles primary and secondary tasks using damped least squares for stability.
     """
-    JT = J.T
-    I = np.eye(J.shape[0])  # Identity matrix
-    damped_term = JT @ np.linalg.inv(J @ JT + (damping**2) * I)
-    delta_theta = damped_term @ e
-    return delta_theta</pre>
-                            </div>
-                        </div>
-                        
-                        <div class="implementation-step">
-                            <h4>Step 2: Hierarchical Task-Based IK with Priority Projection</h4>
-                            <div class="code-block">
-<pre>def hierarchical_ik_solver(J_tasks, e_tasks, damping=0.01):
-    """
-    Compute inverse kinematics with task prioritization for pipe placement.
-    
-    Parameters:
-    - J_tasks: List of Jacobian matrices ordered by priority
-    - e_tasks: List of error vectors ordered by priority
-    
-    Returns:
-    - Optimized joint movements respecting task hierarchy
-    """
-    num_joints = J_tasks[0].shape[1]
-    delta_q = np.zeros(num_joints)
-    N = np.eye(num_joints)  # Nullspace projector
-    
-    for J, e in zip(J_tasks, e_tasks):
-        J_effective = J @ N  # Project current task into nullspace
-        delta_theta = damped_least_squares(J_effective, e, damping)
-        delta_q += delta_theta
-        N -= J_effective.T @ np.linalg.pinv(J_effective)  # Update nullspace
-    
-    return delta_q</pre>
-                            </div>
-                        </div>
-                        
-                        <div class="implementation-step">
-                            <h4>Step 3: Nullspace Projection for Redundancy Handling</h4>
-                            <div class="code-block">
-<pre>def nullspace_projection(J, higher_priority_J):
-    """
-    Compute nullspace projector to avoid conflicts in pipe placement tasks.
-    
-    Parameters:
-    - J: Current task Jacobian
-    - higher_priority_J: Higher-priority Jacobian matrices
-    
-    Returns:
-    - N: Nullspace projector matrix
-    """
-    I = np.eye(J.shape[1])
-    if higher_priority_J is None:
-        return I  # No higher priority tasks
-    
-    # Compute nullspace projector
-    J_hp = np.vstack(higher_priority_J)
-    N = I - np.linalg.pinv(J_hp) @ J_hp
-    return N</pre>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <h3>5.3 Algorithm 3: Polynomial Trajectory Planning for Smooth Motion</h3>
-                    <p>We implement a trajectory planning algorithm that ensures smooth robotic arm movement for reliable pipe handling:</p>
-                    
-                    <div class="algorithm-box">
-                        <h4>Implementation Features:</h4>
-                        <ul class="feature-list">
-                            <li>5th-order minimum jerk trajectory for smooth motion</li>
-                            <li>Continuous velocity and acceleration profiles</li>
-                            <li>Optimal time parameterization for efficient movements</li>
-                            <li>Boundary conditions ensuring smooth starts and stops</li>
-                            <li>Integration with PyBullet for physical simulation</li>
-                        </ul>
-                        
-                        <div class="implementation-step">
-                            <h4>Minimum Jerk Polynomial Trajectory Implementation</h4>
-                            <div class="code-block">
-<pre>def compute_minimum_jerk_trajectory(q_start, q_end, T, steps=100):
-    """
-    Compute a 5th-order polynomial trajectory for smooth PVC pipe handling.
-    
-    Parameters:
-    - q_start: Starting position
-    - q_end: Target position (pipe or mold)
-    - T: Total duration of motion
-    - steps: Number of trajectory points
-    
-    Returns:
-    - Position, velocity, and acceleration trajectories
-    """
-    # Time vector
-    t = np.linspace(0, T, steps)
-    
-    # Boundary conditions matrix
-    A = np.array([
-        [1, 0, 0, 0, 0, 0],                 # q(0) = q_start
-        [0, 1, 0, 0, 0, 0],                 # qd(0) = 0
-        [0, 0, 2, 0, 0, 0],                 # qdd(0) = 0
-        [1, T, T**2, T**3, T**4, T**5],     # q(T) = q_end
-        [0, 1, 2*T, 3*T**2, 4*T**3, 5*T**4],  # qd(T) = 0
-        [0, 0, 2, 6*T, 12*T**2, 20*T**3]    # qdd(T) = 0
-    ])
-    
-    b = np.array([q_start, 0, 0, q_end, 0, 0])  # Boundary conditions
-    
-    # Solve for polynomial coefficients
-    coeffs = np.linalg.solve(A, b)
-    
-    # Compute trajectories
-    q_traj = np.polyval(coeffs[::-1], t)         # Position
-    qd_traj = np.polyval(np.polyder(coeffs[::-1]), t)  # Velocity
-    qdd_traj = np.polyval(np.polyder(np.polyder(coeffs[::-1])), t)  # Acceleration
-    
-    return q_traj, qd_traj, qdd_traj</pre>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <h3>5.4 Algorithm 4: YOLOv8-Based PVC Pipe Detection</h3>
-                    <p>We implement a robust computer vision system for detecting PVC pipes in real-time:</p>
-                    
-                    <div class="algorithm-box">
-                        <h4>Implementation Features:</h4>
-                        <ul class="feature-list">
-                            <li>YOLOv8 integration for real-time object detection</li>
-                            <li>Custom-trained model specifically for PVC pipe recognition</li>
-                            <li>Precise bounding box extraction for accurate localization</li>
-                            <li>Confidence thresholding to ensure reliable detection</li>
-                            <li>2D-to-3D coordinate conversion for robotic control</li>
-                        </ul>
-                        
-                        <div class="implementation-step">
-                            <h4>YOLOv8 Detection Implementation</h4>
-                            <div class="code-block">
-<pre>from ultralytics import YOLO
-import cv2
 
-def detect_pvc_pipes(image, confidence_threshold=0.5):
-    """
-    Detect PVC pipes in images using our custom-trained YOLOv8 model.
-    
-    Parameters:
-    - image: Input camera image from robotic arm
-    - confidence_threshold: Minimum detection confidence
-    
-    Returns:
-    - List of detected PVC pipes with bounding boxes
-    """
-    # Load our custom PVC pipe detection model
-    model = YOLO("pvc_pipe_detector.pt")
-    
-    # Run inference
-    results = model(image, conf=confidence_threshold)
-    
-    # Extract detections
-    detections = []
-    for r in results:
-        for box in r.boxes.data:
-            x1, y1, x2, y2, conf, cls = box.tolist()
-            detections.append({
-                "bbox": (x1, y1, x2, y2), 
-                "confidence": conf, 
-                "class_id": int(cls)
-            })
-    
-    return detections</pre>
+    def __init__(self, damping=0.01):
+        """
+        Initialize the IK solver.
+
+        Args:
+            damping: Damping factor for stability (default=0.01).
+        """
+        self.damping = damping
+
+    def damped_least_squares(self, J, error):
+        """
+        Perform the damped least squares solution for a given Jacobian and error vector.
+
+        Args:
+            J: Jacobian matrix (m x n).
+            error: Error vector (m x 1) - difference between current and target position.
+
+        Returns:
+            Joint angle adjustments (delta_theta).
+        """
+        JT = J.T
+        identity = np.eye(J.shape[0])
+        damped_term = JT @ np.linalg.inv(J @ JT + (self.damping ** 2) * identity)
+        delta_theta = damped_term @ error
+        return delta_theta
+
+    def solve_hierarchical_ik(self, J_tasks, errors):
+        """
+        Solve the hierarchical IK problem with nullspace projection.
+
+        Args:
+            J_tasks: List of Jacobian matrices for tasks (ordered by priority).
+            errors: List of error vectors for each task (ordered by priority).
+
+        Returns:
+            Joint angle adjustments (delta_theta) respecting task priorities.
+        """
+        num_joints = J_tasks[0].shape[1]
+        delta_theta = np.zeros(num_joints)
+        nullspace_projector = np.eye(num_joints)  # Initialize nullspace projector as identity
+
+        for task_idx, (J, error) in enumerate(zip(J_tasks, errors)):
+            # Project the current task into the available nullspace
+            J_effective = J @ nullspace_projector
+
+            # Check if `J_effective` has valid dimensions
+            if J_effective.shape[0] == 0 or J_effective.shape[1] == 0:
+                print(f"Skipping task {task_idx} due to invalid Jacobian dimensions")
+                continue
+
+            # Solve for delta_theta for the current task
+            delta_theta_task = self.damped_least_squares(J_effective, error)
+            delta_theta += delta_theta_task
+
+            # Update the nullspace projector
+            try:
+                # Compute pseudo-inverse of effective Jacobian
+                J_effective_pseudo_inverse = np.linalg.pinv(J_effective)
+
+                # Debug prints for each task
+                print(f"[Task {task_idx}] J_effective shape: {J_effective.shape}")
+                print(f"[Task {task_idx}] J_effective_pseudo_inverse shape: {J_effective_pseudo_inverse.shape}")
+
+                # Update nullspace projector
+                nullspace_update = J_effective_pseudo_inverse @ J_effective
+                nullspace_projector = nullspace_projector - nullspace_update
+            except ValueError as e:
+                print(f"Error updating nullspace projector at task {task_idx}: {e}")
+                continue
+
+        return delta_theta</pre>
                             </div>
                         </div>
                         
                         <div class="implementation-step">
-                            <h4>3D Coordinate Conversion for Robotic Control</h4>
+                            <h4>Example Usage</h4>
                             <div class="code-block">
-<pre>def convert_to_3d_coordinates(bbox, camera_matrix, depth=0.1):
-    """
-    Convert 2D bounding box to 3D real-world coordinates for robot gripper.
-    
-    Parameters:
-    - bbox: (x1, y1, x2, y2) bounding box from YOLOv8
-    - camera_matrix: Camera calibration matrix
-    - depth: Estimated depth from camera to PVC pipe
-    
-    Returns:
-    - (x, y, z) 3D world coordinates for robotic arm
-    """
-    x1, y1, x2, y2 = bbox
-    center_x, center_y = (x1 + x2) / 2, (y1 + y2) / 2
-    
-    # Convert using camera intrinsics
-    fx, fy = camera_matrix[0, 0], camera_matrix[1, 1]
-    cx, cy = camera_matrix[0, 2], camera_matrix[1, 2]
-    
-    # Calculate 3D coordinates
-    x = (center_x - cx) * depth / fx
-    y = (center_y - cy) * depth / fy
-    z = depth
-    
-    return (x, y, z)</pre>
+<pre># Example usage
+if __name__ == "__main__":
+    # Example setup for a 2-task IK problem
+    solver = HierarchicalIKSolver(damping=0.01)
+
+    # Define Jacobians for primary and secondary tasks
+    J_primary = np.array([
+        [-1.0, 0.0, 0.0],
+        [0.0, 1.0, 0.0]
+    ])  # Shape: (2, 3)
+
+    J_secondary = np.array([
+        [0.0, 0.0, 1.0]
+    ])  # Shape: (1, 3)
+
+    # Define error vectors for primary and secondary tasks
+    error_primary = np.array([0.1, -0.2])  # Example target position error (x, y)
+    error_secondary = np.array([0.05])     # Example secondary task error
+
+    # Solve hierarchical IK
+    delta_theta = solver.solve_hierarchical_ik(
+        J_tasks=[J_primary, J_secondary],
+        errors=[error_primary, error_secondary]
+    )
+
+    print("Computed joint angle adjustments:", delta_theta)</pre>
+                            </div>
+                        </div>
+                        
+                        <div class="implementation-step">
+                            <h4>Visualization of Hierarchical IK Results</h4>
+                            <div class="data-flow-diagram">
+                                <img src="./assets/Keerthi/output.png" alt="Hierarchical IK solver output visualization" style="width: 100%;">
+                                <p><em>Figure 5.1: Visualization of Hierarchical Inverse Kinematics solution showing primary task completion and secondary task optimization in nullspace</em></p>
                             </div>
                         </div>
                     </div>
