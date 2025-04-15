@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="" name="description">
+    <meta content="" name="author">
+    
+    <meta name="experiment-short-name" content="pvc-hot-water-coupling">
+    <meta name="developer-institute" content="Amrita Vishwa Vidyapeetham">
+    <meta name="learning-unit" content="Automated PVC Hot Water Coupling Using AI & Robotics">
+    <meta name="task-name" content="Q&A">
+    
+    <title>Q&A: Robotics & Implementation - PVC Hot Water Coupling</title>
+    <link rel="shortcut icon" href="./assets/images/favicon.ico">
+    <link rel="stylesheet" href="./assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Raleway&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="./assets/css/github-markdown.min.css">
+    <link rel="stylesheet" href="./assets/css/vlabs-style.css">
+    <link rel="stylesheet" href="./assets/css/toast.css">
+    <link rel="stylesheet" href="./assets/katex_assets/katex.min.css">
+    
+    <script src="./assets/js/jquery-3.4.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+      /* Blue-based color scheme */
+      :root {
+        --primary-blue: #1a73e8;
+        --secondary-blue: #4285f4;
+        --light-blue: #e8f0fe;
+        --dark-blue: #174ea6;
+        --text-dark: #202124;
+      }
+      
+      body {
+        font-family: 'Open Sans', sans-serif;
+        color: var(--text-dark);
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+        color: var(--primary-blue);
+        margin-top: 2rem;
+      }
+      
+      h2 {
+        font-size: 1.4rem;
+        color: var(--dark-blue);
+      }
+      
+      h3 {
+        font-size: 1.2rem;
+        color: var(--dark-blue);
+      }
+      
+      h2, h3 {
+        font-weight: 800;
+      }
+      
+      .navbar {
+        background-color: var(--primary-blue) !important;
+        color: white !important;
+      }
+      
+      /* Nav menu styles */
+      .nav-menu {
+        background-color: var(--light-blue);
+        border-right: 1px solid #ddd;
+      }
+      
+      .nav-menu-body a {
+        color: var(--dark-blue) !important;
+        text-decoration: none;
+        display: block;
+        padding: 0.5rem 1rem;
+        margin: 2px 0;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+      }
+      
+      .nav-menu-body a:hover {
+        background-color: rgba(66, 133, 244, 0.1);
+        font-weight: bold;
+      }
+      
+      /* Sidebar styles */
+      .sidebar-nav {
+        position: sticky;
+        top: 0;
+        background: var(--light-blue);
+        border-right: 1px solid #ddd;
+        height: 100vh;
+        overflow-y: auto;
+        padding: 1rem 0;
+      }
+      
+      .chapter-link {
+        display: block;
+        padding: 0.5rem 1rem;
+        color: var(--dark-blue);
+        text-decoration: none;
+        border-left: 4px solid transparent;
+        transition: all 0.2s;
+      }
+      
+      .chapter-link:hover, .chapter-link:focus {
+        background-color: rgba(66, 133, 244, 0.1);
+        border-left-color: var(--primary-blue);
+        font-weight: bold;
+      }
+      
+      .page-title {
+        color: var(--primary-blue);
+        padding: 1rem;
+        font-weight: bold;
+        font-size: 1.1rem;
+      }
+      
+      .course-info {
+        color: var(--dark-blue);
+        font-size: 0.9rem;
+        padding: 0 1rem 1rem;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #ddd;
+      }
+      
+      .vlabs-footer {
+        background-color: var(--dark-blue) !important;
+      }
+      
+      hr.divider {
+        border: 0;
+        height: 1px;
+        background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(26, 115, 232, 0.75), rgba(0, 0, 0, 0));
+        margin: 30px 0;
+      }
+      
+      .question-card {
+        background-color: var(--light-blue);
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 25px;
+        border-left: 4px solid var(--primary-blue);
+      }
+      
+      .question-card h3 {
+        color: var(--primary-blue);
+        margin-top: 0;
+        font-size: 1.2rem;
+      }
+      
+      .question-tag {
+        display: inline-block;
+        background-color: var(--dark-blue);
+        color: white;
+        font-size: 0.8rem;
+        padding: 3px 8px;
+        border-radius: 4px;
+        margin-right: 5px;
+        margin-bottom: 5px;
+      }
+      
+      .question-number {
+        background-color: var(--primary-blue);
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 15px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: 10px;
+        font-weight: bold;
+      }
+      
+      .answer {
+        background-color: #fff;
+        border-left: 3px solid var(--secondary-blue);
+        padding: 15px;
+        margin-top: 15px;
+        border-radius: 4px;
+      }
+      
+      .answer-toggle {
+        background-color: var(--primary-blue);
+        color: white;
+        border: none;
+        padding: 5px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        margin-top: 10px;
+      }
+      
+      .answer-toggle:hover {
+        background-color: var(--dark-blue);
+      }
+      
+      .github-section {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 30px 0;
+        border: 1px solid #e0e0e0;
+      }
+      
+      .github-card {
+        display: flex;
+        align-items: center;
+        background-color: white;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        text-decoration: none;
+        color: var(--text-dark);
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+      
+      .github-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        text-decoration: none;
+        color: var(--text-dark);
+      }
+      
+      .github-icon {
+        font-size: 2.5rem;
+        margin-right: 15px;
+        color: #333;
+      }
+      
+      .github-details h4 {
+        margin: 0;
+        color: var(--dark-blue);
+      }
+      
+      .github-details p {
+        margin: 5px 0 0;
+        font-size: 0.9rem;
+        color: #666;
+      }
+      
+      /* Code block styling */
+      .code-block {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 4px;
+        font-family: monospace;
+        overflow-x: auto;
+        margin: 15px 0;
+        border-left: 4px solid var(--primary-blue);
+      }
+      
+      /* MathJax styling */
+      .equation {
+        padding: 10px;
+        margin: 10px 0;
+        background: #f9f9f9;
+        border-left: 4px solid var(--primary-blue);
+        text-align: center;
+      }
+    </style>
+</head>
+
+<body class="p-0 container-fluid vlabs-page d-flex flex-column justify-content-between">
+    <header class="vlabs-header sticky-top bg-white">
+        <nav class="p-0 navbar navbar-light d-flex align-items-stretch" style="background-color: #1a73e8 !important;">
+            <div class="d-flex justify-content-center w-100 align-items-center p-3">
+                <span class="text-white font-weight-bold">Automated PVC Hot Water Coupling Using AI & Robotics</span>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container-fluid flex-fill d-flex flex-column vlabs-page-main">
+        <div class="row flex-grow-1 d-flex flex-nowrap flex-column flex-lg-row">
+            <div class="col-lg-3 col-xl-2 sidebar-nav d-none d-lg-block" id="menu">
+                <div class="page-title">MFC ROBOTICS - Group 9</div>
+                <div class="course-info">
+                    22MAT230: Mathematics for Computing<br>
+                    22AlE214: Introduction to Al & Robotics
+                </div>
+                
+                <a href="index.html#introduction" class="chapter-link">1. Introduction</a>
+                <a href="index.html#problem-statement" class="chapter-link">2. Problem Statement</a>
+                <a href="index.html#proposed-solution" class="chapter-link">3. Proposed Solution</a>
+                <a href="index.html#methodology-and-implementation" class="chapter-link">4. Methodology, Implementation, and Mathematical Foundations</a>
+                <a href="index.html#technical-implementation" class="chapter-link">5. Technical Implementation</a>
+                <a href="index.html#progress-and-challenges" class="chapter-link">6. Progress and Challenges</a>
+                <a href="index.html#literature-review" class="chapter-link">7. Literature Review</a>
+                <a href="index.html#experimental-results" class="chapter-link">8. Experimental Results</a>
+                <a href="index.html#conclusion" class="chapter-link">9. Conclusion</a>
+                <a href="index.html#acknowledgments" class="chapter-link">10. Acknowledgments</a>
+                <a href="index.html#references" class="chapter-link">11. References</a>
+                <a href="model.html" class="chapter-link">12. Robot Model Demo</a>
+                <a href="simulation.html" class="chapter-link">13. RoboDK Simulation</a>
+                <a href="gripper.html" class="chapter-link">14. 3-Finger Adaptive Gripper</a>
+                <a href="qa.html" class="chapter-link" style="background-color: rgba(66, 133, 244, 0.1); font-weight: bold; border-left-color: var(--primary-blue);">15. Q&A Section</a>
+            </div>
+
+            <div class="col-lg-9 col-xl-10 vlabs-page-content px-5 pb-4 flex-grow-1 markdown-body">
+                <div class="text-center fix-spacing">
+                    <h1 id="qa-section">Q&A Section: Robotics Theory & Implementation</h1>
+                    <h3 id="theoretical-practical">Theoretical Concepts and Programming Challenges</h3>
+                </div>
+                
+                <p>This page contains a set of theoretical and programming questions related to the PVC hot water coupling automation project. These questions cover the fundamental concepts and practical implementation aspects of our robotic system.</p>
+                
+                <h2 id="github-repositories">GitHub Repositories</h2>
+                <div class="github-section">
+                    <h3>Project Code Repositories</h3>
+                    <p>Our project's complete source code, including implementations of algorithms described in this report, simulation files, and more, are available in these repositories:</p>
+                    
+                    <a href="https://github.com/KeerthivasanSV/Automation-in-Pipe-industry" class="github-card" target="_blank">
+                        <div class="github-icon">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </div>
+                        <div class="github-details">
+                            <h4>Automation-in-Pipe-industry</h4>
+                            <p>Implementation code for PVC pipe automation project including gripper design, control systems, and computer vision integration</p>
+                        </div>
+                    </a>
+                    
+                    <a href="https://github.com/KeerthivasanSV/Robotics-MFC-Report" class="github-card" target="_blank">
+                        <div class="github-icon">
+                            <i class="fa fa-github" aria-hidden="true"></i>
+                        </div>
+                        <div class="github-details">
+                            <h4>Robotics-MFC-Report</h4>
+                            <p>Project documentation, mathematical models, simulation results, and website source code</p>
+                        </div>
+                    </a>
+                </div>
+                
+                <hr class="divider">
+                
+                <h2 id="theoretical-questions">Theoretical Questions</h2>
+                
+                <div class="question-card">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="question-number">1</span>
+                        <h3>What is the Orthogonal Procrustes Problem and how is it utilized in your pipe coupling system?</h3>
+                    </div>
+                    <div class="d-flex flex-wrap mb-2">
+                        <span class="question-tag">Mathematical Foundations</span>
+                        <span class="question-tag">Alignment</span>
+                        <span class="question-tag">Theory</span>
+                    </div>
+                    <p>Explain the mathematical formulation of the Orthogonal Procrustes Problem and its specific application in the pipe-mold alignment process.</p>
+                    
+                    <div class="answer">
+                        <p>The Orthogonal Procrustes Problem is a mathematical optimization problem that involves finding the best rotation and translation to align two sets of points in space. It's formulated as:</p>
+                        
+                        <div class="equation">
+                            <p>$$\min_{R \in SO(3)} \|RX - Y\|_F^2$$</p>
+                        </div>
+                        
+                        <p>Where:</p>
+                        <ul>
+                            <li>X = 3×n matrix of points on the pipe</li>
+                            <li>Y = 3×n matrix of corresponding points on the mold</li>
+                            <li>R = 3×3 rotation matrix</li>
+                            <li>‖·‖<sub>F</sub> = Frobenius norm</li>
+                        </ul>
+                        
+                        <p>In our system, we use this technique to find the optimal rotation needed to align the PVC pipe with the mold before insertion, which is critical for proper coupling formation. The algorithm performs these steps:</p>
+                        
+                        <ol>
+                            <li>Identify key points on both the pipe and the matching mold</li>
+                            <li>Center both point sets by subtracting their respective means</li>
+                            <li>Calculate the cross-covariance matrix H = X·Y<sup>T</sup></li>
+                            <li>Compute the SVD of H: H = U·Σ·V<sup>T</sup></li>
+                            <li>Compute the optimal rotation matrix R = V·U<sup>T</sup></li>
+                            <li>Calculate the translation vector t = Y_mean - R·X_mean</li>
+                        </ol>
+                        
+                        <p>This approach ensures that even if the pipe is initially at an angle, our robotic system can calculate the exact rotation needed to perfectly align it with the mold, minimizing insertion errors and ensuring proper coupling formation.</p>
+                    </div>
+                </div>
+                
+                <div class="question-card">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="question-number">2</span>
+                        <h3>What are kinematic singularities and why are they important to avoid in robotic manipulation?</h3>
+                    </div>
+                    <div class="d-flex flex-wrap mb-2">
+                        <span class="question-tag">Kinematics</span>
+                        <span class="question-tag">Robotics Theory</span>
+                        <span class="question-tag">Control</span>
+                    </div>
+                    <p>Define kinematic singularities, explain how they can be detected mathematically, and discuss why they pose challenges for robotic manipulation tasks.</p>
+                    
+                    <div class="answer">
+                        <p>Kinematic singularities are configurations of a robot where it loses one or more degrees of freedom, making certain movements impossible. Mathematically, a singularity occurs when the robot's Jacobian matrix becomes rank-deficient (not full rank), causing the system of equations relating joint velocities to end-effector velocities to have infinite solutions or no solutions.</p>
+                        
+                        <p>The determinant of the Jacobian approaches zero at singularities:</p>
+                        
+                        <div class="equation">
+                            <p>$$\det(J(\theta)) \approx 0$$</p>
+                        </div>
+                        
+                        <p>For our 2-DOF robotic arm, singular configurations occur when:</p>
+                        <ol>
+                            <li><strong>Full Extension:</strong> When the arm is completely stretched out (θ₂ ≈ 0°)</li>
+                            <li><strong>Folded Back:</strong> When the arm is completely folded (θ₂ ≈ 180°)</li>
+                        </ol>
+                        
+                        <p>Singularities are problematic for several critical reasons:</p>
+                        <ul>
+                            <li><strong>Loss of Mobility:</strong> The robot cannot move in certain directions at singularities</li>
+                            <li><strong>Infinite Joint Velocities:</strong> Small end-effector movements may require impossibly large joint movements</li>
+                            <li><strong>Control Instability:</strong> Inverse kinematics calculations become unstable near singularities</li>
+                            <li><strong>Path Planning Failures:</strong> Trajectories passing through singularities may cause jerky or failed movements</li>
+                        </ul>
+                        
+                        <p>In our PVC coupling system, we avoid singularities through:</p>
+                        <ol>
+                            <li>Using Damped Least Squares (DLS) method to regularize the inverse kinematics solution</li>
+                            <li>Path planning that deliberately avoids singular configurations</li>
+                            <li>Workspace design that keeps operations away from the boundaries of the arm's reach</li>
+                            <li>Real-time monitoring of the Jacobian's determinant during operation</li>
+                        </ol>
+                        
+                        <p>Our Singularity Explorer simulation (shown in the Simulation page) specifically helps visualize these concepts and allows for testing robot movements in different configurations to understand mobility limitations.</p>
+                    </div>
+                </div>
+                
+                <div class="question-card">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="question-number">3</span>
+                        <h3>How does the nullspace projection method enable hierarchical task prioritization in redundant robots?</h3>
+                    </div>
+                    <div class="d-flex flex-wrap mb-2">
+                        <span class="question-tag">Inverse Kinematics</span>
+                        <span class="question-tag">Advanced Control</span>
+                        <span class="question-tag">Mathematical Foundations</span>
+                    </div>
+                    <p>Explain the concept of nullspace, how nullspace projection works mathematically, and how it enables hierarchical task prioritization in your PVC pipe handling system.</p>
+                    
+                    <div class="answer">
+                        <p>The nullspace of a robot's Jacobian matrix represents all possible joint movements that do not affect the end-effector position. Mathematically, for any joint velocity vector v in the nullspace:</p>
+                        
+                        <div class="equation">
+                            <p>$$J \cdot v = 0$$</p>
+                        </div>
+                        
+                        <p>The nullspace projector (N) is calculated as:</p>
+                        
+                        <div class="equation">
+                            <p>$$N = I - J^{\dagger}J$$</p>
+                        </div>
+                        
+                        <p>Where J<sup>†</sup> is the pseudoinverse of the Jacobian and I is the identity matrix. This projector "filters" any motion to ensure it has no effect on higher-priority tasks.</p>
+                        
+                        <p>In hierarchical task prioritization, we use this concept to handle multiple objectives with strict priority ordering:</p>
+                        
+                        <ol>
+                            <li><strong>Primary Task:</strong> The highest priority task (e.g., positioning the end-effector) is solved first</li>
+                            <li><strong>Secondary Tasks:</strong> Lower priority tasks (e.g., joint limits, obstacle avoidance) are projected into the nullspace of higher priority tasks</li>
+                        </ol>
+                        
+                        <p>The complete solution for two tasks is given by:</p>
+                        
+                        <div class="equation">
+                            <p>$$\Delta\theta = J_1^{\dagger}\Delta\mathbf{x}_1 + N_1(J_2N_1)^{\dagger}(\Delta\mathbf{x}_2 - J_2J_1^{\dagger}\Delta\mathbf{x}_1)$$</p>
+                        </div>
+                        
+                        <p>In our PVC coupling system, we implement hierarchical task prioritization to:</p>
+                        
+                        <ul>
+                            <li><strong>Primary Task:</strong> Precisely position the pipe at the target location for insertion</li>
+                            <li><strong>Secondary Tasks:</strong> Maintain optimal joint configurations for better manipulability</li>
+                            <li><strong>Tertiary Tasks:</strong> Keep the robot away from joint limits and avoid potential collisions</li>
+                        </ul>
+                        
+                        <p>This approach ensures that lower-priority objectives never interfere with the critical task of precise pipe placement, but are still satisfied when possible, making the system more robust and efficient.</p>
+                    </div>
+                </div>
+                
+                <div class="question-card">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="question-number">4</span>
+                        <h3>What is Compliant Beam Theory and why is it critical for PVC pipe handling?</h3>
+                    </div>
+                    <div class="d-flex flex-wrap mb-2">
+                        <span class="question-tag">Mechanical Design</span>
+                        <span class="question-tag">Force Control</span>
+                        <span class="question-tag">Theory</span>
+                    </div>
+                    <p>Discuss the fundamentals of compliant beam theory, the relationship between deflection and applied force, and why this is particularly important for handling PVC pipes during the coupling process.</p>
+                    
+                    <div class="answer">
+                        <p>Compliant Beam Theory describes how flexible beams deform under applied forces. It's fundamental to understanding the behavior of the fingers in our adaptive gripper.</p>
+                        
+                        <p>The core relationship in beam theory connects curvature (κ) to bending moment (M):</p>
+                        
+                        <div class="equation">
+                            <p>$$\kappa = \frac{M}{EI}$$</p>
+                        </div>
+                        
+                        <p>Where:</p>
+                        <ul>
+                            <li>E = Young's modulus (material stiffness)</li>
+                            <li>I = Moment of inertia (beam's resistance to bending)</li>
+                        </ul>
+                        
+                        <p>For large deflections in our gripper fingers, we use the nonlinear form:</p>
+                        
+                        <div class="equation">
+                            <p>$$\kappa = \frac{d\psi}{ds} = \frac{d\psi/dx}{\sqrt{1+(dy/dx)^2}}$$</p>
+                        </div>
+                        
+                        <p>Compliant Beam Theory is critical for PVC pipe handling for several reasons:</p>
+                        
+                        <ol>
+                            <li><strong>Adaptive Force Application:</strong> PVC pipes become soft and malleable when heated, requiring precisely controlled gripping forces</li>
+                            <li><strong>Consistent Pressure Distribution:</strong> Compliant fingers distribute force more evenly than rigid ones, preventing localized deformation</li>
+                            <li><strong>Passive Adaptation to Geometry:</strong> The fingers conform to different pipe diameters without requiring active sensing or control</li>
+                            <li><strong>Inherent Force Limitation:</strong> Properly designed compliant grippers have built-in force limitations based on their geometry</li>
+                        </ol>
+                        
+                        <p>In our system, we specifically optimized the geometry and material properties of the gripper fingers to achieve a near-constant gripping force across different pipe diameters (0.7cm to 2.2cm) by solving the nonlinear beam equations and using genetic algorithms to minimize force variation. This ensures that:</p>
+                        
+                        <ul>
+                            <li>Cold pipes are gripped securely without slippage</li>
+                            <li>Heated pipes are held firmly without deformation</li>
+                            <li>Force remains consistent regardless of manufacturing variations in pipe diameter</li>
+                            <li>The system doesn't require complex force feedback control loops for basic operation</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="question-card">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="question-number">5</span>
+                        <h3>How does Minimum Jerk Trajectory Planning improve robotic movement quality?</h3>
+                    </div>
+                    <div class="d-flex flex-wrap mb-2">
+                        <span class="question-tag">Motion Planning</span>
+                        <span class="question-tag">Control Theory</span>
+                        <span class="question-tag">Optimization</span>
+                    </div>
+                    <p>Describe the minimum jerk trajectory approach, its mathematical formulation, and why it produces smoother and more natural robotic movements compared to other trajectory planning methods.</p>
+                    
+                    <div class="answer">
+                        <p>Minimum Jerk Trajectory Planning is an approach that minimizes the rate of change of acceleration (jerk) throughout a movement. This produces smooth, natural-looking motion similar to how humans move. The mathematical objective is to minimize:</p>
+                        
+                        <div class="equation">
+                            <p>$$J = \int_{t_0}^{t_f} \left(\frac{d^3x}{dt^3}\right)^2 dt$$</p>
+                        </div>
+                        
+                        <p>For point-to-point motion, the minimum jerk trajectory is a 5th-order polynomial:</p>
+                        
+                        <div class="equation">
+                            <p>$$x(t) = a_0 + a_1t + a_2t^2 + a_3t^3 + a_4t^4 + a_5t^5$$</p>
+                        </div>
+                        
+                        <p>The coefficients are determined by six boundary conditions (position, velocity, and acceleration at start and end points):</p>
+                        <ul>
+                            <li>Initial position: x(0) = x₀</li>
+                            <li>Initial velocity: x'(0) = 0</li>
+                            <li>Initial acceleration: x''(0) = 0</li>
+                            <li>Final position: x(T) = xₜ</li>
+                            <li>Final velocity: x'(T) = 0</li>
+                            <li>Final acceleration: x''(T) = 0</li>
+                        </ul>
+                        
+                        <p>Minimum jerk trajectories improve robotic movement quality in several ways:</p>
+                        
+                        <ol>
+                            <li><strong>Reduced Mechanical Stress:</strong> Lower jerk means less vibration and wear on joints and actuators</li>
+                            <li><strong>Improved Precision:</strong> Smoother movements result in more accurate end-effector positioning</li>
+                            <li><strong>Better Control of Carried Objects:</strong> Minimizes unwanted dynamics when handling delicate items like heated PVC pipes</li>
+                            <li><strong>Energy Efficiency:</strong> Smooth acceleration and deceleration profiles reduce power consumption</li>
+                            <li><strong>Human-like Motion:</strong> Creates more predictable movements that are easier for human operators to anticipate</li>
+                        </ol>
+                        
+                        <p>In our PVC coupling system, minimum jerk trajectories are particularly important when:</p>
+                        
+                        <ul>
+                            <li>Moving heated pipes from the water bath to the mold without spilling water droplets</li>
+                            <li>Inserting softened pipes into molds without deformation</li>
+                            <li>Picking up pipes from the supply stack without disturbing adjacent pipes</li>
+                            <li>Transitioning between detection, grasping, and placement operations</li>
+                        </ul>
+                        
+                        <p>Our implementation uses matrix formulation to efficiently solve for the polynomial coefficients, then samples the resulting trajectory at appropriate intervals for robot control.</p>
+                    </div>
+                </div>
+                
+                <hr class="divider">
+                
+                <h2 id="programming-questions">Programming Questions</h2>
+                
+                <div class="question-card">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="question-number">6</span>
+                        <h3>Implement a function to calculate the Jacobian matrix for a 2-DOF planar robot arm.</h3>
+                    </div>
+                    <div class="d-flex flex-wrap mb-2">
+                        <span class="question-tag">Programming</span>
+                        <span class="question-tag">Kinematics</span>
+                        <span class="question-tag">Python</span>
+                    </div>
+                    <p>Write a Python function that computes the Jacobian matrix for a 2-DOF planar robot arm with link lengths L1 and L2, given the joint angles theta1 and theta2.</p>
+                    
+                    <div class="answer">
+                        <p>The following function calculates the Jacobian matrix for a 2-DOF planar robot arm:</p>
+                        
+                        <div class="code-block">
+<pre>import numpy as np
+
+def calculate_2dof_jacobian(theta1, theta2, L1, L2):
+    """
+    Calculate the Jacobian matrix for a 2-DOF planar robot arm.
+    
+    Parameters:
+    - theta1: Angle of the first joint in radians
+    - theta2: Angle of the second joint in radians
+    - L1: Length of the first link
+    - L2: Length of the second link
+    
+    Returns:
+    - J: 2x2 Jacobian matrix relating joint velocities to end-effector velocities
+    """
+    # Calculate elements of the Jacobian matrix
+    J11 = -L1 * np.sin(theta1) - L2 * np.sin(theta1 + theta2)
+    J12 = -L2 * np.sin(theta1 + theta2)
+    J21 = L1 * np.cos(theta1) + L2 * np.cos(theta1 + theta2)
+    J22 = L2 * np.cos(theta1 + theta2)
+    
+    # Form the Jacobian matrix
+    J = np.array([[J11, J12], [J21, J22]])
+    
+    return J
+
+# Example usage
+if __name__ == "__main__":
+    # Robot parameters
+    L1, L2 = 1.0, 0.8  # Link lengths
+    
+    # Test case 1: Standard configuration
+    theta1, theta2 = np.radians(45), np.radians(45)
+    J = calculate_2dof_jacobian(theta1, theta2, L1, L2)
+    det_J = np.linalg.det(J)
+    print(f"Jacobian at (45°, 45°):\n{J}")
+    print(f"Determinant: {det_J:.4f}")
+    
+    # Test case 2: Near singularity (fully extended)
+    theta1, theta2 = np.radians(0), np.radians(0)
+    J = calculate_2dof_jacobian(theta1, theta2, L1, L2)
+    det_J = np.linalg.det(J)
+    print(f"\nJacobian at (0°, 0°) - near singularity:\n{J}")
+    print(f"Determinant: {det_J:.4f}")  # Should be close to 0, indicating singularity</pre>
+                        </div>
+                        
+                        <p><strong>Explanation:</strong></p>
+                        <p>This function derives the Jacobian matrix for a 2-DOF planar robot arm, which relates joint velocities to end-effector velocities. The elements of the matrix come from the partial derivatives of the end-effector position with respect to the joint angles.</p>
+                        
+                        <p>For our 2-DOF arm with forward kinematics:</p>
+                        <ul>
+                            <li>x = L₁cos(θ₁) + L₂cos(θ₁+θ₂)</li>
+                            <li>y = L₁sin(θ₁) + L₂sin(θ₁+θ₂)</li>
+                        </ul>
+                        
+                        <p>The Jacobian is:</p>
+                        <ul>
+                            <li>J₁₁ = ∂x/∂θ₁ = -L₁sin(θ₁) - L₂sin(θ₁+θ₂)</li>
+                            <li>J₁₂ = ∂x/∂θ₂ = -L₂sin(θ₁+θ₂)</li>
+                            <li>J₂₁ = ∂y/∂θ₁ = L₁cos(θ₁) + L₂cos(θ₁+θ₂)</li>
+                            <li>J₂₂ = ∂y/∂θ₂ = L₂cos(θ₁+θ₂)</li>
+                        </ul>
+                        
+                        <p>The determinant of this matrix tells us about the manipulability of the robot at a given configuration. When the determinant approaches zero, the robot is near a singularity.</p>
+                    </div>
+                </div>
+                
+                <div class="question-card">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="question-number">7</span>
+                        <h3>Implement the Damped Least Squares algorithm for stable inverse kinematics.</h3>
+                    </div>
+                    <div class="d-flex flex-wrap mb-2">
+                        <span class="question-tag">Programming</span>
+                        <span class="question-tag">Inverse Kinematics</span>
+                        <span class="question-tag">Numerical Methods</span>
+                    </div>
+                    <p>Implement a Python function for the Damped Least Squares method that takes a Jacobian matrix, error vector, and damping parameter to compute joint angle adjustments while avoiding singularity issues.</p>
+                    
+                    <div class="answer">
+                        <p>Here's an implementation of the Damped Least Squares algorithm for stable inverse kinematics:</p>
+                        
+                        <div class="code-block">
+<pre>import numpy as np
+
+def damped_least_squares(J, e, damping=0.01):
+    """
+    Compute joint movements using Damped Least Squares for stable inverse kinematics.
+    
+    Parameters:
+    - J: Jacobian matrix (m x n)
+    - e: Error vector (m x 1) - distance from current to target position
+    - damping: Stability parameter to avoid singularities
+    
+    Returns:
+    - delta_theta: Joint movements for precise positioning
+    """
+    # Compute the transpose of the Jacobian
+    JT = J.T
+    
+    # Create identity matrix sized to match J rows
+    I = np.eye(J.shape[0])
+    
+    # Compute the damped least squares solution
+    # Δθ = J^T * (J * J^T + λ^2 * I)^(-1) * e
+    damped_term = JT @ np.linalg.inv(J @ JT + (damping**2) * I)
+    delta_theta = damped_term @ e
+    
+    return delta_theta
+
+# Example usage demonstration
+def test_damped_least_squares():
+    # Create a 2-DOF robot arm with link lengths
+    L1, L2 = 1.0, 0.8
+    
+    # Current configuration
+    theta1 = np.radians(30)
+    theta2 = np.radians(60)
+    
+    # Calculate current end-effector position
+    x_current = L1 * np.cos(theta1) + L2 * np.cos(theta1 + theta2)
+    y_current = L1 * np.sin(theta1) + L2 * np.sin(theta1 + theta2)
+    
+    # Target position - slightly offset from current
+    x_target = x_current + 0.1
+    y_target = y_current + 0.1
+    
+    # Calculate error vector
+    e = np.array([x_target - x_current, y_target - y_current])
+    
+    # Calculate Jacobian
+    J = np.array([
+        [-L1 * np.sin(theta1) - L2 * np.sin(theta1 + theta2), -L2 * np.sin(theta1 + theta2)],
+        [L1 * np.cos(theta1) + L2 * np.cos(theta1 + theta2), L2 * np.cos(theta1 + theta2)]
+    ])
+    
+    # Test with different damping values
+    dampings = [0.0001, 0.01, 0.1, 1.0]
+    
+    print("Error vector:", e)
+    print("Jacobian condition number:", np.linalg.cond(J))
+    
+    for damp in dampings:
+        delta_theta = damped_least_squares(J, e, damping=damp)
+        print(f"\nDamping = {damp}:")
+        print(f"Change in joint angles: {np.degrees(delta_theta)} degrees")
+        
+        # Apply the change to get the new joint angles
+        new_theta1 = theta1 + delta_theta[0]
+        new_theta2 = theta2 + delta_theta[1]
+        
+        # Calculate the resulting end-effector position
+        new_x = L1 * np.cos(new_theta1) + L2 * np.cos(new_theta1 + new_theta2)
+        new_y = L1 * np.sin(new_theta1) + L2 * np.sin(new_theta1 + new_theta2)
+        
+        # Calculate the residual error
+        residual = np.sqrt((new_x - x_target)**2 + (new_y - y_target)**2)
+        print(f"Resulting position: ({new_x:.4f}, {new_y:.4f})")
+        print(f"Residual error: {residual:.6f}")
+
+if __name__ == "__main__":
+    test_damped_least_squares()</pre>
+                        </div>
+                        
+                        <p><strong>Explanation:</strong></p>
+                        <p>The Damped Least Squares method provides a robust solution to the inverse kinematics problem by adding regularization to handle singularities. Instead of directly inverting the Jacobian matrix (which can be problematic near singularities), DLS uses this formulation:</p>
+                        
+                        <div class="equation">
+                            <p>$$\Delta\theta = J^T(JJ^T + \lambda^2I)^{-1}\Delta\mathbf{x}$$</p>
+                        </div>
+                        
+                        <p>Where:</p>
+                        <ul>
+                            <li>Δθ = Joint angle adjustments</li>
+                            <li>J = Jacobian matrix</li>
+                            <li>J<sup>T</sup> = Transpose of the Jacobian</li>
+                            <li>λ = Damping factor</li>
+                            <li>I = Identity matrix</li>
+                            <li>Δx = Error vector (difference between target and current position)</li>
+                        </ul>
+                        
+                        <p>The damping factor λ is the key to stability:</p>
+                        <ul>
+                            <li>When λ = 0, DLS is equivalent to the pseudoinverse solution</li>
+                            <li>When λ is large, the solution prioritizes small joint movements over exact error correction</li>
+                            <li>Typical values range from 0.01 to 0.1 depending on the robot</li>
+                        </ul>
+                        
+                        <p>The test function demonstrates the effect of different damping values on the resulting joint movements and accuracy of the end-effector positioning. Higher damping values result in more stable but less accurate solutions.</p>
+                    </div>
+                </div>
+                
+                <div class="question-card">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="question-number">8</span>
+                        <h3>Implement a YOLOv8-based PVC pipe detector that outputs coordinates for robot control.</h3>
+                    </div>
+                    <div class="d-flex flex-wrap mb-2">
+                        <span class="question-tag">Programming</span>
+                        <span class="question-tag">Computer Vision</span>
+                        <span class="question-tag">Integration</span>
+                    </div>
+                    <p>Write a Python script that uses YOLOv8 to detect PVC pipes in an image and converts the detected bounding boxes to 3D world coordinates for robotic arm control.</p>
+                    
+                    <div class="answer">
+                        <p>Below is an implementation of a YOLOv8-based PVC pipe detector with coordinate conversion:</p>
+                        
+                        <div class="code-block">
+<pre>import numpy as np
+import cv2
+from ultralytics import YOLO
+import matplotlib.pyplot as plt
+from scipy.spatial.transform import Rotation as R
+
+def detect_pvc_pipes(image, model_path, confidence_threshold=0.5, iou_threshold=0.45):
+    """
+    Detect PVC pipes in images using YOLOv8.
+    
+    Parameters:
+    - image: Input camera image from robotic arm
+    - model_path: Path to the YOLOv8 model weights
+    - confidence_threshold: Minimum detection confidence
+    - iou_threshold: IOU threshold for NMS
+    
+    Returns:
+    - List of detected PVC pipes with bounding boxes
+    - Annotated image with detections
+    """
+    # Load the YOLOv8 model
+    model = YOLO(model_path)
+    
+    # Run inference with specified parameters
+    results = model(image, conf=confidence_threshold, iou=iou_threshold)
+    
+    # Extract detections
+    detections = []
+    for r in results:
+        for box in r.boxes.data:
+            x1, y1, x2, y2, conf, cls = box.tolist()
+            detections.append({
+                "bbox": (int(x1), int(y1), int(x2), int(y2)), 
+                "confidence": conf, 
+                "class_id": int(cls)
+            })
+    
+    return detections, results[0].plot()
+</pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question-card">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="question-number">9</span>
+                        <h3>Solve the Minimum Jerk Trajectory Planning problem for smooth pipe movement.</h3>
+                    </div>
+                    <div class="d-flex flex-wrap mb-2">
+                        <span class="question-tag">Programming</span>
+                        <span class="question-tag">Trajectory Planning</span>
+                        <span class="question-tag">Optimization</span>
+                    </div>
+                    <p>Implement a Python function that computes a minimum jerk trajectory for the robot arm to move PVC pipes between positions with smooth acceleration and deceleration.</p>
+                    
+                    <div class="answer">
+                        <p>Here's an implementation of a minimum jerk trajectory planner for smooth robotic movement:</p>
+                        
+                        <div class="code-block">
+<pre>import numpy as np
+import matplotlib.pyplot as plt
+
+def compute_minimum_jerk_trajectory(q_start, q_end, T, steps=100):
+    """
+    Compute a 5th-order polynomial trajectory for smooth PVC pipe handling.
+    
+    Parameters:
+    - q_start: Starting position (float or array for multi-DOF)
+    - q_end: Target position (float or array for multi-DOF)
+    - T: Total duration of motion in seconds
+    - steps: Number of trajectory points
+    
+    Returns:
+    - Position, velocity, and acceleration trajectories
+    """
+    # Time vector
+    t = np.linspace(0, T, steps)
+    
+    # Boundary conditions matrix
+    A = np.array([
+        [1, 0, 0, 0, 0, 0],                 # q(0) = q_start
+        [0, 1, 0, 0, 0, 0],                 # qd(0) = 0
+        [0, 0, 2, 0, 0, 0],                 # qdd(0) = 0
+        [1, T, T**2, T**3, T**4, T**5],     # q(T) = q_end
+        [0, 1, 2*T, 3*T**2, 4*T**3, 5*T**4],  # qd(T) = 0
+        [0, 0, 2, 6*T, 12*T**2, 20*T**3]    # qdd(T) = 0
+    ])
+    
+    # Handle both scalar and vector inputs
+    if np.isscalar(q_start) and np.isscalar(q_end):
+        # Scalar case (single DOF)
+        b = np.array([q_start, 0, 0, q_end, 0, 0])  # Boundary conditions
+        
+        # Solve for polynomial coefficients
+        coeffs = np.linalg.solve(A, b)
+        
+        # Compute trajectories
+        q_traj = np.polyval(coeffs[::-1], t)         # Position
+        qd_traj = np.polyval(np.polyder(coeffs[::-1]), t)  # Velocity
+        qdd_traj = np.polyval(np.polyder(np.polyder(coeffs[::-1])), t)  # Acceleration
+        
+        return q_traj, qd_traj, qdd_traj
+    
+    else:
+        # Vector case (multi DOF)
+        q_start = np.array(q_start)
+        q_end = np.array(q_end)
+        dof = len(q_start)
+        
+        # Initialize output trajectories
+        q_traj = np.zeros((steps, dof))
+        qd_traj = np.zeros((steps, dof))
+        qdd_traj = np.zeros((steps, dof))
+        
+        # Solve for each DOF
+        for i in range(dof):
+            b = np.array([q_start[i], 0, 0, q_end[i], 0, 0])
+            coeffs = np.linalg.solve(A, b)
+            
+            q_traj[:, i] = np.polyval(coeffs[::-1], t)
+            qd_traj[:, i] = np.polyval(np.polyder(coeffs[::-1]), t)
+            qdd_traj[:, i] = np.polyval(np.polyder(np.polyder(coeffs[::-1])), t)
+            
+        return q_traj, qd_traj, qdd_traj
+
+def plot_trajectory(t, q, qd, qdd, title="Minimum Jerk Trajectory"):
+    """
+    Visualize the generated trajectory.
+    
+    Parameters:
+    - t: Time vector
+    - q: Position trajectory
+    - qd: Velocity trajectory
+    - qdd: Acceleration trajectory
+    - title: Plot title
+    """
+    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(10, 8), sharex=True)
+    
+    # Position plot
+    ax1.plot(t, q)
+    ax1.set_ylabel('Position')
+    ax1.set_title(title)
+    ax1.grid(True)
+    
+    # Velocity plot
+    ax2.plot(t, qd)
+    ax2.set_ylabel('Velocity')
+    ax2.grid(True)
+    
+    # Acceleration plot
+    ax3.plot(t, qdd)
+    ax3.set_xlabel('Time (s)')
+    ax3.set_ylabel('Acceleration')
+    ax3.grid(True)
+    
+    plt.tight_layout()
+    plt.show()
+
+# Example usage
+def pipe_movement_example():
+    # Example: Moving a pipe from water bath to mold
+    # Define start and end positions (x, y coordinates)
+    start_pos = np.array([0.5, -0.3])  # Water bath position
+    end_pos = np.array([0.8, 0.4])     # Mold position
+    
+    # Duration of movement (seconds)
+    duration = 2.0
+    
+    # Calculate trajectory
+    pos_traj, vel_traj, acc_traj = compute_minimum_jerk_trajectory(
+        start_pos, end_pos, duration, steps=100)
+    
+    # Create time vector
+    t = np.linspace(0, duration, 100)
+    
+    # Plot x and y trajectories
+    plt.figure(figsize=(14, 6))
+    
+    plt.subplot(1, 2, 1)
+    plt.plot(t, pos_traj[:, 0], 'b-', label='Position')
+    plt.plot(t, vel_traj[:, 0], 'g-', label='Velocity')
+    plt.plot(t, acc_traj[:, 0], 'r-', label='Acceleration')
+    plt.xlabel('Time (s)')
+    plt.title('X-Direction Trajectory')
+    plt.grid(True)
+    plt.legend()
+    
+    plt.subplot(1, 2, 2)
+    plt.plot(t, pos_traj[:, 1], 'b-', label='Position')
+    plt.plot(t, vel_traj[:, 1], 'g-', label='Velocity')
+    plt.plot(t, acc_traj[:, 1], 'r-', label='Acceleration')
+    plt.xlabel('Time (s)')
+    plt.title('Y-Direction Trajectory')
+    plt.grid(True)
+    plt.legend()
+    
+    plt.suptitle('Minimum Jerk Trajectory for PVC Pipe Movement', fontsize=16)
+    plt.tight_layout()
+    plt.subplots_adjust(top=0.88)
+    
+    # Plot the 2D path
+    plt.figure(figsize=(8, 8))
+    plt.plot(pos_traj[:, 0], pos_traj[:, 1], 'b-', linewidth=2)
+    plt.plot(start_pos[0], start_pos[1], 'go', markersize=10, label='Start (Water Bath)')
+    plt.plot(end_pos[0], end_pos[1], 'ro', markersize=10, label='End (Mold)')
+    
+    # Add arrows to show direction
+    n_arrows = 5
+    arrow_idx = np.linspace(10, 90, n_arrows).astype(int)
+    for i in arrow_idx:
+        plt.arrow(pos_traj[i, 0], pos_traj[i, 1], 
+                  vel_traj[i, 0]*0.02, vel_traj[i, 1]*0.02, 
+                  head_width=0.02, head_length=0.03, fc='k', ec='k')
+    
+    plt.xlabel('X Position (m)')
+    plt.ylabel('Y Position (m)')
+    plt.title('2D Path for PVC Pipe Movement')
+    plt.grid(True)
+    plt.axis('equal')
+    plt.legend()
+    plt.show()
+
+if __name__ == "__main__":
+    # Simple example
+    duration = 2.0  # seconds
+    t = np.linspace(0, duration, 100)
+    pos, vel, acc = compute_minimum_jerk_trajectory(0.0, 1.0, duration)
+    plot_trajectory(t, pos, vel, acc, "Single DOF Minimum Jerk Trajectory")
+    
+    # Multi-DOF example for pipe movement
+    pipe_movement_example()</pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr class="divider">
+                
+                <h2 id="design-rationale">Design Rationales and Conclusions</h2>
+                <p>The theoretical and programming questions covered in this section directly reflect the key innovations and challenges of our PVC pipe coupling automation system. Understanding concepts like kinematic singularities, nullspace projection, and compliant beam theory is essential for designing a robust robotic system capable of handling the diverse requirements of the PVC coupling process.</p>
+                
+                <p>The implementation examples provided demonstrate practical approaches to solving the mathematical and engineering challenges inherent in our project, from detecting and manipulating pipes to ensuring smooth and precise movements. These code snippets form the foundation of the complete system implementation available in our GitHub repositories.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-light pt-2 vlabs-footer d-flex flex-column">
+        <div class="row px-5 mx-0">
+            <div class="col d-flex flex-column">
+                <span class="font-weight-bold vlabs-footer-section-title pb-2 mb-3">Course Information</span>
+                <span class="text-light">22MAT230: Mathematics for Computing (MFC4)</span>
+                <span class="text-light">22AlE214: Introduction to Al & Robotics</span>
+            </div>
+        </div>
+        <div class="m-0 py-2 text-center" style="font-family: &quot;Open Sans&quot;, sans-serif; background: #212121;">
+            S4 Project | MFC ROBOTICS Group 9 (AIE "A" Batch)
+        </div>
+    </footer>
+
+    <script src="./assets/js/toggleSidebar.js"></script>
+    
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+    
+    <script>
+      // Force MathJax to typeset when page is fully loaded
+      window.addEventListener('load', function() {
+        if (typeof MathJax !== 'undefined') {
+          MathJax.typeset();
+        }
+      });
+    </script>
+</body>
+</html>

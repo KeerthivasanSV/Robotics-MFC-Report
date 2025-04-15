@@ -260,18 +260,18 @@
                 <a href="#introduction" class="chapter-link">1. Introduction</a>
                 <a href="#problem-statement" class="chapter-link">2. Problem Statement</a>
                 <a href="#proposed-solution" class="chapter-link">3. Proposed Solution</a>
-                <a href="#methodology" class="chapter-link">4. Methodology</a>
+                <a href="#methodology-and-implementation" class="chapter-link">4. Methodology, Implementation, and Mathematical Foundations</a>
                 <a href="#technical-implementation" class="chapter-link">5. Technical Implementation</a>
                 <a href="#progress-and-challenges" class="chapter-link">6. Progress and Challenges</a>
                 <a href="#literature-review" class="chapter-link">7. Literature Review</a>
-                <a href="#advanced-mathematical-foundations" class="chapter-link">8. Advanced Mathematical Foundations</a>
-                <a href="#experimental-results" class="chapter-link">9. Experimental Results</a>
-                <a href="#conclusion" class="chapter-link">10. Conclusion</a>
-                <a href="#acknowledgments" class="chapter-link">11. Acknowledgments</a>
-                <a href="#references" class="chapter-link">12. References</a>
-                <a href="model.html" class="chapter-link">13. Robot Model Demo</a>
-                <a href="simulation.html" class="chapter-link">14. RoboDK Simulation</a>
-                <a href="gripper.html" class="chapter-link">15. 3-Finger Adaptive Gripper</a>
+                <a href="#experimental-results" class="chapter-link">8. Experimental Results</a>
+                <a href="#conclusion" class="chapter-link">9. Conclusion</a>
+                <a href="#acknowledgments" class="chapter-link">10. Acknowledgments</a>
+                <a href="#references" class="chapter-link">11. References</a>
+                <a href="model.html" class="chapter-link">12. Robot Model Demo</a>
+                <a href="simulation.html" class="chapter-link">13. RoboDK Simulation</a>
+                <a href="gripper.html" class="chapter-link">14. 3-Finger Adaptive Gripper</a>
+                <a href="qanda.html" class="chapter-link">15. Q&A Section</a>
             </div>
 
             <div class="col-lg-9 col-xl-10 vlabs-page-content px-5 pb-4 flex-grow-1 markdown-body">
@@ -365,16 +365,10 @@
                     </ol>
                 </div>
 
-                <h1 id="methodology">4. Methodology</h1>
+                <h1 id="methodology-and-implementation">4. Methodology, Implementation, and Mathematical Foundations</h1>
                 <div class="method-section">
                     <h3>4.1 Overview</h3>
-                    <p>Our methodology integrates robotics, AI-driven detection, and advanced mathematical models to achieve a fully automated PVC hot water coupling process. The approach consists of three key phases:</p>
-                    <ol>
-                        <li><strong>Novel Approach - Flat Surface Assumption:</strong> A fundamental redesign of the workspace layout for optimal automation.</li>
-                        <li><strong>Robotic Arm Design & Motion Planning:</strong> A specialized 2-DOF robotic arm with integrated vision and adaptive gripping.</li>
-                        <li><strong>Mathematical Foundations & Precision Placement:</strong> Advanced algorithms ensuring accuracy, stability, and adaptability.</li>
-                    </ol>
-                    <p>Each phase has been carefully designed to minimize human intervention while maximizing operational reliability and precision.</p>
+                    <p>Our approach integrates advanced robotics, computer vision, and mathematical modeling to create a fully automated PVC hot water coupling system. This comprehensive methodology combines theoretical foundations with practical implementation to address the challenges of pipe detection, adaptive gripping, and precision placement.</p>
                     
                     <h3>4.2 Novel Approach: Flat Surface Assumption</h3>
                     <p>Traditional automation systems rely on vertical interfaces where pipes must be manually positioned. Our approach introduces a flat surface layout that fundamentally simplifies the automation process:</p>
@@ -387,7 +381,6 @@
                             <li><strong>Scalable Workspace:</strong> The flat layout allows for easy expansion of the working area to accommodate increased production requirements.</li>
                         </ul>
                     </div>
-                    <p>This approach forms the foundation of our system, making the automation process more practical and scalable compared to conventional vertical-oriented systems.</p>
                     
                     <h3>4.3 Robotic Arm Design & Motion Planning</h3>
                     <p>We've designed a specialized robotic arm optimized for the PVC coupling process with the following key features:</p>
@@ -412,57 +405,9 @@
                         <li><strong>Force Feedback Control:</strong> Sensors monitor applied force to prevent damage to softened PVC material.</li>
                     </ul>
                     
-                    <h3>4.4 Mathematical Foundations & Precision Placement</h3>
-                    <p>The automation system relies on three core mathematical principles that work together to ensure precise operation:</p>
+                    <h3>4.4 Compliant Beam Theory for Adaptive Gripping</h3>
                     
-                    <h4>4.4.1 Pipe Detection with YOLOv8 and Coordinate Mapping</h4>
-                    <p>Our system uses YOLOv8 to detect pipes and converts the 2D image coordinates to 3D real-world coordinates:</p>
-                    <div class="code-block">
-                        <pre>
-# YOLOv8 detection produces bounding box: (x, y, width, height)
-# Camera calibration matrix provides intrinsic parameters
-# 3D coordinates calculated using:
-X_world = (x_pixel - c_x) * Z / f_x
-Y_world = (y_pixel - c_y) * Z / f_y
-Z_world = depth_from_camera
-
-where:
-- (x_pixel, y_pixel) is the center of the detected bounding box
-- (c_x, c_y) are the principal point coordinates
-- f_x, f_y are the focal lengths
-- Z is the estimated depth to the object
-                        </pre>
-                    </div>
-                    
-                    <h4>4.4.2 Optimal Force Control for Adaptive Gripping</h4>
-                    <p>We implement a constant-force adaptive grasping algorithm based on nonlinear beam theory and optimization techniques:</p>
-                    <div class="equation">
-                        <p>Compliant Beam ODE:</p>
-                        <p>ψ″ = (h·sin(ψ) + v·cos(ψ)) / (E·I)</p>
-                        <p>where:</p>
-                        <p>ψ is the beam angle, E is the elastic modulus,</p>
-                        <p>I is the moment of inertia, h and v are external forces</p>
-                    </div>
-                    <p>This model is solved using the shooting method and optimized with genetic algorithms and sequential quadratic programming (SQP) to ensure constant force application regardless of pipe diameter variations.</p>
-                    
-                    <h4>4.4.3 Precision Placement with Hierarchical Inverse Kinematics</h4>
-                    <p>For precise placement of pipes into molds, we employ hierarchical inverse kinematics:</p>
-                    <div class="equation">
-                        <p>Δθ = J<sup>T</sup>(JJ<sup>T</sup> + λ<sup>2</sup>I)<sup>-1</sup>e</p>
-                        <p>where:</p>
-                        <p>J is the Jacobian matrix, e is the task error vector,</p>
-                        <p>λ is a damping factor, and Δθ is the joint correction</p>
-                    </div>
-                    <p>We use the Orthogonal Procrustes Problem for alignment optimization, ensuring precise positioning despite variations in pipe dimensions.</p>
-                </div>
-
-                <h1 id="advanced-mathematical-foundations">8. Advanced Mathematical Foundations</h1>
-                <div class="method-section">
-                    <p>This section provides comprehensive explanations of the key mathematical concepts powering our automated PVC coupling system. Each topic is explained from first principles with detailed derivations and visualizations to ensure accessibility without requiring specialized background knowledge.</p>
-                    
-                    <h3>8.1 Compliant Beam Theory for Adaptive Gripping</h3>
-                    
-                    <h4>8.1.1 Understanding Beam Deflection: First Principles</h4>
+                    <h4>4.4.1 Understanding Beam Deflection: First Principles</h4>
                     <p>At its core, compliant beam theory describes how a flexible beam (like a finger in our gripper) bends under applied forces. Let's start with the fundamentals:</p>
                     
                     <div class="equation">
@@ -478,20 +423,20 @@ where:
                     
                     <div class="data-flow-diagram">
                         <img src="./assets/images/beam_bending_basics.png" alt="Basic beam bending showing curvature relation to bending moment" style="width: 85%;">
-                        <p><em>Figure 8.1: Fundamental relation between force, bending moment, and beam curvature</em></p>
+                        <p><em>Figure 4.1: Fundamental relation between force, bending moment, and beam curvature</em></p>
                     </div>
                     
-                    <h4>8.1.2 From Linear to Nonlinear Beam Theory</h4>
+                    <h4>4.4.2 From Linear to Nonlinear Beam Theory</h4>
                     <p>For small deflections, the curvature can be approximated as:</p>
                     
                     <div class="equation">
-                        <p>$\kappa \approx \frac{d^2y}{dx^2}$</p>
+                        <p>$$\kappa \approx \frac{d^2y}{dx^2}$$</p>
                     </div>
                     
                     <p>However, for our gripper with large deflections, we need the exact curvature:</p>
                     
                     <div class="equation">
-                        <p>$\kappa = \frac{d\psi}{ds} = \frac{d\psi/dx}{\sqrt{1+(dy/dx)^2}}$</p>
+                        <p>$$\kappa = \frac{d\psi}{ds} = \frac{d\psi/dx}{\sqrt{1+(dy/dx)^2}}$$</p>
                     </div>
                     
                     <p>Where:</p>
@@ -503,24 +448,48 @@ where:
                     <p>For a beam under combined forces, the governing equation becomes:</p>
                     
                     <div class="equation">
-                        <p>$\frac{d^2\psi}{ds^2} = \frac{h\sin\psi + v\cos\psi}{EI}$</p>
+                        <p>$$\frac{d^2\psi}{ds^2} = \frac{h\sin\psi + v\cos\psi}{EI}$$</p>
                     </div>
                     
-                    <h4>8.1.3 Solving the Nonlinear Beam Equation</h4>
-                    <p>This nonlinear equation doesn't have a simple analytical solution. We convert it to a system of first-order ODEs:</p>
+                    <h4>4.4.3 Implementation: Compliant Constant-Force Adaptive Grasping</h4>
+                    <p>This algorithm ensures a constant gripping force using a compliant mechanism, optimized for handling PVC pipes without damage:</p>
                     
-                    <div class="equation">
-                        <p>$\frac{d\psi}{ds} = \psi'$</p>
-                        <p>$\frac{d\psi'}{ds} = \frac{h\sin\psi + v\cos\psi}{EI}$</p>
-                        <p>$\frac{dx}{ds} = \cos\psi$</p>
-                        <p>$\frac{dy}{ds} = \sin\psi$</p>
-                    </div>
-                    
-                    <p>We use the "shooting method" to solve this boundary value problem:</p>
-                    
-                    <div class="code-block">
-<pre>
-def solve_beam_bvp(E, I, h, v, L, theta_guess):
+                    <div class="algorithm-box">
+                        <h4>Implementation Features:</h4>
+                        <ul class="feature-list">
+                            <li>Mathematical force optimization without reliance on PID control</li>
+                            <li>Compliant mechanism modeling with nonlinear beam theory</li>
+                            <li>Boundary value problem (BVP) solving using the shooting method</li>
+                            <li>Optimization via Genetic Algorithm and Sequential Quadratic Programming</li>
+                        </ul>
+                        
+                        <div class="implementation-step">
+                            <h4>Step 1: Mathematical Modeling of Compliant Beam Deformation</h4>
+                            <div class="code-block">
+<pre>import numpy as np
+from scipy.integrate import solve_ivp
+
+def compliant_beam_ode(u, y, E, I, h, v):
+    """
+    Nonlinear ODE system for compliant beam deformation in our gripper.
+    
+    Parameters:
+    - u: Arc length parameter
+    - y: State vector [ψ, ψ', x, y]
+    - E: PVC elastic modulus
+    - I: Moment of inertia
+    - h, v: External forces (x, y)
+    """
+    psi, psi_prime, x, y_coord = y
+    psi_double_prime = (h * np.sin(psi) + v * np.cos(psi)) / (E * I)
+    return [psi_prime, psi_double_prime, np.cos(psi), np.sin(psi)]</pre>
+                            </div>
+                        </div>
+                        
+                        <div class="implementation-step">
+                            <h4>Step 2: Solving the Nonlinear Beam Equation</h4>
+                            <div class="code-block">
+<pre>def solve_beam_bvp(E, I, h, v, L, theta_guess):
     """
     Solve beam deflection using shooting method.
     
@@ -544,68 +513,72 @@ def solve_beam_bvp(E, I, h, v, L, theta_guess):
     # Solve ODE
     solution = solve_ivp(ode_system, [0, L], y0, method='RK45', rtol=1e-6)
     
-    return solution
-</pre>
+    return solution</pre>
+                            </div>
+                        </div>
+                        
+                        <div class="implementation-step">
+                            <h4>Step 3: Genetic Algorithm for Shape Optimization</h4>
+                            <div class="code-block">
+<pre>from scipy.optimize import differential_evolution
+
+def force_variation(params):
+    """
+    Objective function: Minimize force variation when gripping PVC pipes.
+    """
+    L1, L2, c1, c2 = params
+    E, I = 2.6e9, 1e-6  # PVC material properties
+    displacement_range = np.linspace(0.7, 2.2, 5)  # Typical pipe diameters
+    
+    forces = []
+    for disp in displacement_range:
+        solution = solve_compliant_beam(E, I, h=5, v=disp)
+        forces.append(np.abs(solution.y[1][-1]))  # Force at end
+
+    # Aim for constant force regardless of pipe diameter
+    force_diff = np.max(forces) - np.min(forces)
+    return force_diff
+
+# Optimize using Genetic Algorithm
+bounds = [(4, 6), (4, 6), (-3, 3), (-3, 3)]  # Parameter bounds
+optimal_shape = differential_evolution(force_variation, bounds)</pre>
+                            </div>
+                        </div>
                     </div>
                     
-                    <div class="data-flow-diagram">
-                        <img src="./assets/images/beam_shooting_method.png" alt="Illustration of shooting method for beam deflection" style="width: 90%;">
-                        <p><em>Figure 8.2: Shooting method iteratively finds the initial angle θ₀ that satisfies the boundary conditions</em></p>
-                    </div>
+                    <h3>4.5 Hierarchical Inverse Kinematics with Nullspace Projection</h3>
                     
-                    <h4>8.1.4 Optimizing for Constant Force</h4>
-                    <p>Our key innovation is creating a gripper that applies <em>constant force</em> regardless of pipe diameter. This is formulated as an optimization problem:</p>
-                    
-                    <div class="equation">
-                        <p>$\min_{\mathbf{p}} \left( \max_{d \in D} F(d, \mathbf{p}) - \min_{d \in D} F(d, \mathbf{p}) \right)^2$</p>
-                    </div>
-                    
-                    <p>Where:</p>
-                    <ul>
-                        <li>p = design parameters vector [L₁, L₂, c₁, c₂]</li>
-                        <li>d = pipe diameter</li>
-                        <li>D = set of possible pipe diameters</li>
-                        <li>F(d,p) = force applied to pipe with parameters p</li>
-                    </ul>
-                    
-                    <div class="data-flow-diagram">
-                        <img src="./assets/images/constant_force_optimization.png" alt="Constant force optimization results" style="width: 85%;">
-                        <p><em>Figure 8.3: Optimized gripper design maintains near-constant force across all pipe diameters</em></p>
-                    </div>
-                    
-                    <h3>8.2 Hierarchical Inverse Kinematics with Nullspace Projection</h3>
-                    
-                    <h4>8.2.1 Forward Kinematics: The Foundation</h4>
+                    <h4>4.5.1 Forward Kinematics: The Foundation</h4>
                     <p>Before understanding inverse kinematics, we need to grasp forward kinematics: how joint angles determine the end-effector position.</p>
                     
                     <p>For our 2-DOF arm, the end-effector position (x,y) is related to joint angles (θ₁,θ₂) by:</p>
                     
                     <div class="equation">
-                        <p>$x = L_1\cos\theta_1 + L_2\cos(\theta_1+\theta_2)$</p>
-                        <p>$y = L_1\sin\theta_1 + L_2\sin(\theta_1+\theta_2)$</p>
+                        <p>$$x = L_1\cos\theta_1 + L_2\cos(\theta_1+\theta_2)$$</p>
+                        <p>$$y = L_1\sin\theta_1 + L_2\sin(\theta_1+\theta_2)$$</p>
                     </div>
                     
                     <div class="data-flow-diagram">
                         <img src="./assets/images/forward_kinematics.png" alt="Forward kinematics mapping joint angles to end-effector position" style="width: 75%;">
-                        <p><em>Figure 8.4: Forward kinematics maps joint angles to the end-effector position</em></p>
+                        <p><em>Figure 4.2: Forward kinematics maps joint angles to the end-effector position</em></p>
                     </div>
                     
-                    <h4>8.2.2 The Jacobian Matrix: Relating Velocities</h4>
+                    <h4>4.5.2 The Jacobian Matrix: Relating Velocities</h4>
                     <p>The Jacobian matrix (J) relates joint velocities to end-effector velocities:</p>
                     
                     <div class="equation">
-                        <p>$\begin{bmatrix} \dot{x} \\ \dot{y} \end{bmatrix} = \begin{bmatrix} 
+                        <p>$$\begin{bmatrix} \dot{x} \\ \dot{y} \end{bmatrix} = \begin{bmatrix} 
                         -L_1\sin\theta_1 - L_2\sin(\theta_1+\theta_2) & -L_2\sin(\theta_1+\theta_2) \\
                         L_1\cos\theta_1 + L_2\cos(\theta_1+\theta_2) & L_2\cos(\theta_1+\theta_2)
-                        \end{bmatrix} \begin{bmatrix} \dot{\theta}_1 \\ \dot{\theta}_2 \end{bmatrix}$</p>
-                        <p>$\dot{\mathbf{x}} = J(\theta) \dot{\theta}$</p>
+                        \end{bmatrix} \begin{bmatrix} \dot{\theta}_1 \\ \dot{\theta}_2 \end{bmatrix}$$</p>
+                        <p>$$\dot{\mathbf{x}} = J(\theta) \dot{\theta}$$</p>
                     </div>
                     
-                    <h4>8.2.3 Basic Inverse Kinematics Problem</h4>
+                    <h4>4.5.3 Basic Inverse Kinematics Problem</h4>
                     <p>Inverse kinematics finds joint angles to reach a desired position. Given a target position change Δx, we need joint changes Δθ:</p>
                     
                     <div class="equation">
-                        <p>$\Delta\theta = J^{-1}\Delta\mathbf{x}$</p>
+                        <p>$$\Delta\theta = J^{-1}\Delta\mathbf{x}$$</p>
                     </div>
                     
                     <p>However, two problems arise:</p>
@@ -614,64 +587,90 @@ def solve_beam_bvp(E, I, h, v, L, theta_guess):
                         <li>With redundant robots, multiple solutions exist</li>
                     </ol>
                     
-                    <h4>8.2.4 Damped Least Squares Solution</h4>
+                    <h4>4.5.4 Implementation: Damped Least Squares Solution</h4>
                     <p>Instead of direct inversion, we use damped least squares:</p>
                     
                     <div class="equation">
-                        <p>$\Delta\theta = J^T(JJ^T + \lambda^2I)^{-1}\Delta\mathbf{x}$</p>
+                        <p>$$\Delta\theta = J^T(JJ^T + \lambda^2I)^{-1}\Delta\mathbf{x}$$</p>
                     </div>
                     
                     <p>Where λ is a damping factor that stabilizes the solution near singularities.</p>
                     
                     <div class="code-block">
-<pre>
-def compute_damped_least_squares(J, dx, lambd=0.01):
+<pre>import numpy as np
+
+def damped_least_squares(J, e, damping=0.01):
     """
-    Compute joint movements using Damped Least Squares.
+    Compute joint movements using Damped Least Squares for stable pipe placement.
     
     Parameters:
-    - J: Jacobian matrix
-    - dx: Desired end-effector movement
-    - lambd: Damping factor
+    - J: Jacobian matrix (m x n)
+    - e: Error vector (m x 1) - distance from current to target position
+    - damping: Stability parameter to avoid singularities
     
     Returns:
-    - dtheta: Joint angle changes
+    - Joint movements for precise pipe positioning
     """
-    J_T = J.T
-    term = J @ J_T + (lambd**2) * np.eye(J.shape[0])
-    dtheta = J_T @ np.linalg.inv(term) @ dx
-    return dtheta
-</pre>
+    JT = J.T
+    I = np.eye(J.shape[0])  # Identity matrix
+    damped_term = JT @ np.linalg.inv(J @ JT + (damping**2) * I)
+    delta_theta = damped_term @ e
+    return delta_theta</pre>
                     </div>
                     
-                    <h4>8.2.5 Nullspace and Task Hierarchies</h4>
+                    <h4>4.5.5 Hierarchical Task-Based IK with Priority Projection</h4>
                     <p>For robots with redundant degrees of freedom, the nullspace represents joint movements that don't affect the end-effector position. The nullspace projector is:</p>
                     
                     <div class="equation">
-                        <p>$N = I - J^{\dagger}J$</p>
+                        <p>$$N = I - J^{\dagger}J$$</p>
                     </div>
                     
                     <p>We can exploit this for hierarchical tasks. If we have a primary task (position) and a secondary task (e.g., joint limits), we solve:</p>
                     
                     <div class="equation">
-                        <p>$\Delta\theta = J_1^{\dagger}\Delta\mathbf{x}_1 + N_1(J_2N_1)^{\dagger}(\Delta\mathbf{x}_2 - J_2J_1^{\dagger}\Delta\mathbf{x}_1)$</p>
+                        <p>$$\Delta\theta = J_1^{\dagger}\Delta\mathbf{x}_1 + N_1(J_2N_1)^{\dagger}(\Delta\mathbf{x}_2 - J_2J_1^{\dagger}\Delta\mathbf{x}_1)$$</p>
                     </div>
                     
                     <div class="data-flow-diagram">
                         <img src="./assets/images/nullspace_visualization.png" alt="Visualization of nullspace movements" style="width: 90%;">
-                        <p><em>Figure 8.5: Visualization of how nullspace movements change joint configuration without affecting the end-effector position</em></p>
+                        <p><em>Figure 4.3: Visualization of how nullspace movements change joint configuration without affecting the end-effector position</em></p>
                     </div>
                     
-                    <h3>8.3 Orthogonal Procrustes Problem for Mold Alignment</h3>
+                    <div class="code-block">
+<pre>def hierarchical_ik_solver(J_tasks, e_tasks, damping=0.01):
+    """
+    Compute inverse kinematics with task prioritization for pipe placement.
+    
+    Parameters:
+    - J_tasks: List of Jacobian matrices ordered by priority
+    - e_tasks: List of error vectors ordered by priority
+    
+    Returns:
+    - Optimized joint movements respecting task hierarchy
+    """
+    num_joints = J_tasks[0].shape[1]
+    delta_q = np.zeros(num_joints)
+    N = np.eye(num_joints)  # Nullspace projector
+    
+    for J, e in zip(J_tasks, e_tasks):
+        J_effective = J @ N  # Project current task into nullspace
+        delta_theta = damped_least_squares(J_effective, e, damping)
+        delta_q += delta_theta
+        N -= J_effective.T @ np.linalg.pinv(J_effective)  # Update nullspace
+    
+    return delta_q</pre>
+                    </div>
                     
-                    <h4>8.3.1 The Alignment Challenge</h4>
+                    <h3>4.6 Orthogonal Procrustes Problem for Mold Alignment</h3>
+                    
+                    <h4>4.6.1 The Alignment Challenge</h4>
                     <p>When placing a pipe into a mold, we need to align two sets of points: points on the pipe and corresponding points on the mold. This is precisely what the Orthogonal Procrustes Problem solves.</p>
                     
-                    <h4>8.3.2 Mathematical Formulation</h4>
+                    <h4>4.6.2 Mathematical Formulation</h4>
                     <p>Given two sets of points (X and Y), find the rotation matrix R that minimizes:</p>
                     
                     <div class="equation">
-                        <p>$\min_{R \in SO(3)} \|RX - Y\|_F^2$</p>
+                        <p>$$\min_{R \in SO(3)} \|RX - Y\|_F^2$$</p>
                     </div>
                     
                     <p>Where:</p>
@@ -682,20 +681,7 @@ def compute_damped_least_squares(J, dx, lambd=0.01):
                         <li>‖·‖<sub>F</sub> = Frobenius norm</li>
                     </ul>
                     
-                    <h4>8.3.3 Centering the Point Sets</h4>
-                    <p>First, we center both point sets by subtracting their means:</p>
-                    
-                    <div class="code-block">
-<pre>
-def center_points(X):
-    """Center points around origin by subtracting mean."""
-    mean = np.mean(X, axis=1, keepdims=True)
-    X_centered = X - mean
-    return X_centered, mean
-</pre>
-                    </div>
-                    
-                    <h4>8.3.4 Solution via Singular Value Decomposition (SVD)</h4>
+                    <h4>4.6.3 Implementation: SVD Solution for Optimal Alignment</h4>
                     <p>The solution involves these steps:</p>
                     <ol>
                         <li>Compute the covariance matrix H = X·Y<sup>T</sup></li>
@@ -704,14 +690,17 @@ def center_points(X):
                     </ol>
                     
                     <div class="equation">
-                        <p>$H = X Y^T = U \Sigma V^T$</p>
-                        <p>$R = V U^T$</p>
+                        <p>$$H = X Y^T = U \Sigma V^T$$</p>
+                        <p>$$R = V U^T$$</p>
                     </div>
                     
-                    <p>If det(R) = -1, we need to ensure a proper rotation by flipping the sign of the last column of V.</p>
-                    
                     <div class="code-block">
-<pre>
+<pre>def center_points(X):
+    """Center points around origin by subtracting mean."""
+    mean = np.mean(X, axis=1, keepdims=True)
+    X_centered = X - mean
+    return X_centered, mean
+
 def solve_orthogonal_procrustes(X, Y):
     """
     Find optimal rotation matrix to align X with Y.
@@ -747,25 +736,167 @@ def solve_orthogonal_procrustes(X, Y):
     # Compute translation
     t = Y_mean - R @ X_mean
     
-    return R, t
-</pre>
+    return R, t</pre>
                     </div>
                     
                     <div class="data-flow-diagram">
                         <img src="./assets/images/procrustes_alignment.png" alt="Procrustes alignment of pipe to mold" style="width: 85%;">
-                        <p><em>Figure 8.6: Orthogonal Procrustes solution finds the optimal rotation to align pipe with mold</em></p>
+                        <p><em>Figure 4.4: Orthogonal Procrustes solution finds the optimal rotation to align pipe with mold</em></p>
                     </div>
                     
-                    <h4>8.3.5 Practical Application in Our System</h4>
-                    <p>We use this algorithm to:</p>
-                    <ul>
-                        <li>Identify key points on the pipe end using computer vision</li>
-                        <li>Match them with predetermined points on the mold</li>
-                        <li>Calculate the optimal rotation for perfect alignment</li>
-                        <li>Apply this rotation to position the pipe precisely before insertion</li>
-                    </ul>
+                    <h3>4.7 AI-Based Pipe Detection System</h3>
                     
-                    <p>This mathematical foundation ensures that even with manufacturing variations in pipes or slight positioning errors, we achieve precise alignment every time.</p>
+                    <h4>4.7.1 YOLOv8-Based PVC Pipe Detection</h4>
+                    <p>We implement a robust computer vision system for detecting PVC pipes in real-time:</p>
+                    
+                    <div class="algorithm-box">
+                        <h4>Implementation Features:</h4>
+                        <ul class="feature-list">
+                            <li>YOLOv8 integration for real-time object detection</li>
+                            <li>Custom-trained model specifically for PVC pipe recognition</li>
+                            <li>Precise bounding box extraction for accurate localization</li>
+                            <li>Confidence thresholding to ensure reliable detection</li>
+                            <li>2D-to-3D coordinate conversion for robotic control</li>
+                        </ul>
+                        
+                        <div class="implementation-step">
+                            <h4>YOLOv8 Detection Implementation</h4>
+                            <div class="code-block">
+<pre>from ultralytics import YOLO
+import cv2
+
+def detect_pvc_pipes(image, confidence_threshold=0.5):
+    """
+    Detect PVC pipes in images using our custom-trained YOLOv8 model.
+    
+    Parameters:
+    - image: Input camera image from robotic arm
+    - confidence_threshold: Minimum detection confidence
+    
+    Returns:
+    - List of detected PVC pipes with bounding boxes
+    """
+    # Load our custom PVC pipe detection model
+    model = YOLO("pvc_pipe_detector.pt")
+    
+    # Run inference
+    results = model(image, conf=confidence_threshold)
+    
+    # Extract detections
+    detections = []
+    for r in results:
+        for box in r.boxes.data:
+            x1, y1, x2, y2, conf, cls = box.tolist()
+            detections.append({
+                "bbox": (x1, y1, x2, y2), 
+                "confidence": conf, 
+                "class_id": int(cls)
+            })
+    
+    return detections</pre>
+                            </div>
+                        </div>
+                        
+                        <div class="implementation-step">
+                            <h4>3D Coordinate Conversion for Robotic Control</h4>
+                            <div class="code-block">
+<pre>def convert_to_3d_coordinates(bbox, camera_matrix, depth=0.1):
+    """
+    Convert 2D bounding box to 3D real-world coordinates for robot gripper.
+    
+    Parameters:
+    - bbox: (x1, y1, x2, y2) bounding box from YOLOv8
+    - camera_matrix: Camera calibration matrix
+    - depth: Estimated depth from camera to PVC pipe
+    
+    Returns:
+    - (x, y, z) 3D world coordinates for robotic arm
+    """
+    x1, y1, x2, y2 = bbox
+    center_x, center_y = (x1 + x2) / 2, (y1 + y2) / 2
+    
+    # Convert using camera intrinsics
+    fx, fy = camera_matrix[0, 0], camera_matrix[1, 1]
+    cx, cy = camera_matrix[0, 2], camera_matrix[1, 2]
+    
+    # Calculate 3D coordinates
+    x = (center_x - cx) * depth / fx
+    y = (center_y - cy) * depth / fy
+    z = depth
+    
+    return (x, y, z)</pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3>4.8 Smooth Motion Planning</h3>
+                    <p>We implement a trajectory planning algorithm that ensures smooth robotic arm movement for reliable pipe handling:</p>
+                    
+                    <div class="algorithm-box">
+                        <h4>Implementation Features:</h4>
+                        <ul class="feature-list">
+                            <li>5th-order minimum jerk trajectory for smooth motion</li>
+                            <li>Continuous velocity and acceleration profiles</li>
+                            <li>Optimal time parameterization for efficient movements</li>
+                            <li>Boundary conditions ensuring smooth starts and stops</li>
+                        </ul>
+                        
+                        <div class="implementation-step">
+                            <h4>Minimum Jerk Polynomial Trajectory Implementation</h4>
+                            <div class="code-block">
+<pre>def compute_minimum_jerk_trajectory(q_start, q_end, T, steps=100):
+    """
+    Compute a 5th-order polynomial trajectory for smooth PVC pipe handling.
+    
+    Parameters:
+    - q_start: Starting position
+    - q_end: Target position (pipe or mold)
+    - T: Total duration of motion
+    - steps: Number of trajectory points
+    
+    Returns:
+    - Position, velocity, and acceleration trajectories
+    """
+    # Time vector
+    t = np.linspace(0, T, steps)
+    
+    # Boundary conditions matrix
+    A = np.array([
+        [1, 0, 0, 0, 0, 0],                 # q(0) = q_start
+        [0, 1, 0, 0, 0, 0],                 # qd(0) = 0
+        [0, 0, 2, 0, 0, 0],                 # qdd(0) = 0
+        [1, T, T**2, T**3, T**4, T**5],     # q(T) = q_end
+        [0, 1, 2*T, 3*T**2, 4*T**3, 5*T**4],  # qd(T) = 0
+        [0, 0, 2, 6*T, 12*T**2, 20*T**3]    # qdd(T) = 0
+    ])
+    
+    b = np.array([q_start, 0, 0, q_end, 0, 0])  # Boundary conditions
+    
+    # Solve for polynomial coefficients
+    coeffs = np.linalg.solve(A, b)
+    
+    # Compute trajectories
+    q_traj = np.polyval(coeffs[::-1], t)         # Position
+    qd_traj = np.polyval(np.polyder(coeffs[::-1]), t)  # Velocity
+    qdd_traj = np.polyval(np.polyder(np.polyder(coeffs[::-1])), t)  # Acceleration
+    
+    return q_traj, qd_traj, qdd_traj</pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3>4.9 Integration of Components</h3>
+                    <p>The full system integration combines these mathematical foundations and implementations into a cohesive automation pipeline:</p>
+                    
+                    <ol>
+                        <li><strong>Pipe Detection:</strong> YOLOv8 detects PVC pipes and converts coordinates to 3D space</li>
+                        <li><strong>Path Planning:</strong> Generates smooth minimum-jerk trajectories for optimal arm movement</li>
+                        <li><strong>Gripping:</strong> Applies constant force through compliant beam optimization</li>
+                        <li><strong>Alignment:</strong> Uses Procrustes analysis to determine optimal rotation for mold insertion</li>
+                        <li><strong>Precision Placement:</strong> Executes the insertion with hierarchical IK control</li>
+                    </ol>
+                    
+                    <p>This integrated approach combines theoretical foundations with practical implementation, creating a robust system capable of handling variations in pipe dimensions, lighting conditions, and positioning while maintaining consistent quality throughout the coupling process.</p>
                 </div>
 
                 <h1 id="technical-implementation">5. Technical Implementation</h1>
@@ -986,9 +1117,9 @@ def damped_least_squares(J, e, damping=0.01):
         [1, 0, 0, 0, 0, 0],                 # q(0) = q_start
         [0, 1, 0, 0, 0, 0],                 # qd(0) = 0
         [0, 0, 2, 0, 0, 0],                 # qdd(0) = 0
-        [1, T, T*2, T3, T4, T*5],     # q(T) = q_end
-        [0, 1, 2*T, 3*T*2, 4*T3, 5*T*4],  # qd(T) = 0
-        [0, 0, 2, 6*T, 12*T*2, 20*T*3]    # qdd(T) = 0
+        [1, T, T**2, T**3, T**4, T**5],     # q(T) = q_end
+        [0, 1, 2*T, 3*T**2, 4*T**3, 5*T**4],  # qd(T) = 0
+        [0, 0, 2, 6*T, 12*T**2, 20*T**3]    # qdd(T) = 0
     ])
     
     b = np.array([q_start, 0, 0, q_end, 0, 0])  # Boundary conditions
@@ -1198,9 +1329,9 @@ def detect_pvc_pipes(image, confidence_threshold=0.5):
                     </tr>
                 </table>
 
-                <h1 id="experimental-results">9. Experimental Results</h1>
+                <h1 id="experimental-results">8. Experimental Results</h1>
                 <div class="method-section">
-                    <h3>9.1 Performance Metrics</h3>
+                    <h3>8.1 Performance Metrics</h3>
                     <p>We conducted extensive testing of our automated PVC hot water coupling system, comparing it against traditional manual processes. The following metrics were evaluated:</p>
                     
                     <table class="literature-table">
@@ -1242,7 +1373,7 @@ def detect_pvc_pipes(image, confidence_threshold=0.5):
                         </tr>
                     </table>
                     
-                    <h3>9.2 Detection Accuracy Analysis</h3>
+                    <h3>8.2 Detection Accuracy Analysis</h3>
                     <p>Our YOLOv8-based PVC pipe detection system was evaluated under various environmental conditions:</p>
                     
                     <table class="literature-table">
@@ -1278,7 +1409,7 @@ def detect_pvc_pipes(image, confidence_threshold=0.5):
                         </tr>
                     </table>
                     
-                    <h3>9.3 Gripper Force Analysis</h3>
+                    <h3>8.3 Gripper Force Analysis</h3>
                     <p>The adaptive gripper's force profile was measured across different pipe diameters:</p>
                     
                     <div class="data-flow-diagram">
@@ -1289,9 +1420,9 @@ def detect_pvc_pipes(image, confidence_threshold=0.5):
                     <p>The GA+SQP optimization reduced force variation from ±25% to ±3% across the full range of pipe diameters (0.7cm to 2.2cm).</p>
                 </div>
 
-                <h1 id="conclusion">10. Conclusion</h1>
+                <h1 id="conclusion">9. Conclusion</h1>
                 <div class="method-section">
-                    <h3>10.1 Key Achievements</h3>
+                    <h3>9.1 Key Achievements</h3>
                     <ul>
                         <li><strong>Fully Automated System:</strong> Successfully developed an end-to-end automated system for PVC hot water coupling that eliminates manual labor.</li>
                         <li><strong>AI-Driven Approach:</strong> Integrated YOLOv8 for robust pipe detection and adaptive algorithms for optimal force control.</li>
@@ -1299,7 +1430,7 @@ def detect_pvc_pipes(image, confidence_threshold=0.5):
                         <li><strong>Performance Improvements:</strong> Achieved 285% higher throughput, 85.9% reduction in defects, and 94% reduction in labor hours.</li>
                     </ul>
                     
-                    <h3>10.2 Industrial Impact</h3>
+                    <h3>9.2 Industrial Impact</h3>
                     <p>Our automated system addresses critical challenges in the PVC pipe manufacturing industry:</p>
                     <ul>
                         <li><strong>Worker Safety:</strong> Reduced exposure to hot materials and repetitive motion injuries.</li>
@@ -1308,7 +1439,7 @@ def detect_pvc_pipes(image, confidence_threshold=0.5):
                         <li><strong>Cost Efficiency:</strong> Despite the initial investment, the system offers a projected ROI within 14 months for medium-sized operations.</li>
                     </ul>
                     
-                    <h3>10.3 Future Work</h3>
+                    <h3>9.3 Future Work</h3>
                     <p>Several promising directions for future research and development include:</p>
                     <ul>
                         <li><strong>Multi-Size Adaptability:</strong> Expanding the system to handle a wider range of pipe diameters and coupling configurations.</li>
@@ -1318,12 +1449,12 @@ def detect_pvc_pipes(image, confidence_threshold=0.5):
                         <li><strong>Material Adaptability:</strong> Extending the approach to other thermoplastics and composite materials with different thermal and mechanical properties.</li>
                     </ul>
                     
-                    <h3>10.4 Final Thoughts</h3>
+                    <h3>9.4 Final Thoughts</h3>
                     <p>This project lays the foundation for next-generation industrial automation by demonstrating how AI, advanced mathematics, and robotics can work together to solve complex manufacturing challenges. The integration of computer vision, force optimization, and precision control creates a robust system capable of replacing labor-intensive processes with consistent, safe, and efficient automation.</p>
                     <p>As we continue to refine these technologies, we anticipate significant impacts on manufacturing efficiency, product quality, and workplace safety in the PVC coupling industry and beyond.</p>
                 </div>
 
-                <h1 id="acknowledgments">11. Acknowledgments</h1>
+                <h1 id="acknowledgments">10. Acknowledgments</h1>
                 <div class="method-section">
                     <p>We would like to express our gratitude to:</p>
                     <ul>
@@ -1334,7 +1465,7 @@ def detect_pvc_pipes(image, confidence_threshold=0.5):
                     </ul>
                 </div>
 
-                <h1 id="references">12. References</h1>
+                <h1 id="references">11. References</h1>
                 <div class="method-section">
                     <ol>
                         <li>Qiu, S., & Kermani, M. R. (2021). Inverse Kinematics of High Dimensional Robotic Arm-Hand Systems for Precision Grasping. IEEE Transactions on Robotics, 37(2), 503-517.</li>
