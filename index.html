@@ -577,11 +577,6 @@ def convert_2d_to_3d(detections, camera_matrix, depth_map=None):
                         <li>Torque limits: Protect the robot joints from excessive strain</li>
                     </ul>
 
-                    <div class="data-flow-diagram">
-                        <img src="./assets/Mothish/cone.jpg" alt="Force optimization diagram showing friction cone constraints" style="width: 85%;">
-                        <p><em>Figure 4.2: Force optimization with friction cone constraints ensuring stable grasping</em></p>
-                    </div>
-
                     <h4>4.5.2 Mathematical Constraints</h4>
                     <p>The optimization is governed by three mathematical constraints:</p>
 
@@ -724,10 +719,6 @@ class AdaptiveGripForceOptimizer:
                         <li>$\frac{d^3x}{dt^3}$ is the jerk (third derivative of position)</li>
                     </ul>
 
-                    <div class="data-flow-diagram">
-                        <img src="./assets/Karthi/3D Path Trajectory.png" alt="Minimum-jerk trajectory profile showing smooth position, velocity, and acceleration curves" style="width: 85%;">
-                        <p><em>Figure 4.3: Minimum-jerk trajectory profile showing smooth position, velocity, and acceleration curves</em></p>
-                    </div>
 
                     <h4>4.6.2 The 5th-Order Polynomial Solution</h4>
                     <p>The analytical solution to the minimum-jerk problem is a 5th-order polynomial:</p>
@@ -1097,8 +1088,16 @@ def process_pipe_detection(frame, depth_map=None):
                         <div class="implementation-step">
                             <h4>YOLOv8 Detection Results</h4>
                             <div class="data-flow-diagram">
-                                <img src="./assets/images/yolo_detection.png" alt="YOLOv8 pipe detection visualization showing three test images with bounding boxes">
-                                <p><em>Figure 5.1: YOLOv8 detecting PVC pipes of various sizes under different lighting conditions</em></p>
+                                <img src="./assets/Reddy/1.jpg" alt="YOLOv8 pipe detection visualization showing three test images with bounding boxes">
+                                <p><em>Figure 5.1.1: YOLOv8 detecting PVC pipes of various sizes under different lighting conditions</em></p>
+                            </div>
+                            <div class="data-flow-diagram">
+                                <img src="./assets/Reddy/2.jpg" alt="YOLOv8 pipe detection visualization showing three test images with bounding boxes">
+                                <p><em>Figure 5.1.1: YOLOv8 detecting PVC pipes of various sizes under different lighting conditions</em></p>
+                            </div>
+                            <div class="data-flow-diagram">
+                                <img src="./assets/Reddy/3.jpg" alt="YOLOv8 pipe detection visualization showing three test images with bounding boxes">
+                                <p><em>Figure 5.1.1: YOLOv8 detecting PVC pipes of various sizes under different lighting conditions</em></p>
                             </div>
                         </div>
                     </div>
@@ -1190,7 +1189,7 @@ result = minimize(objective, initial_guess, method='SLSQP', constraints=constrai
                         <div class="implementation-step">
                             <h4>Gripping Force Simulation Results</h4>
                             <div class="data-flow-diagram">
-                                <img src="./assets/images/force_profile.jpg" alt="Adaptive gripping force profile across different pipe diameters">
+                                <img src="./assets/Mothish/cone.jpg" alt="Adaptive gripping force profile across different pipe diameters">
                                 <p><em>Figure 5.2: Adaptive gripping force profile showing consistent force application across different pipe diameters after optimization</em></p>
                             </div>
                         </div>
@@ -1511,7 +1510,7 @@ class MinimumJerkTrajectoryPlanner:
                         <div class="implementation-step">
                             <h4>Trajectory Visualization</h4>
                             <div class="data-flow-diagram">
-                                <img src="./assets/images/min_jerk_trajectory.png" alt="3D visualization of minimum-jerk trajectory for PVC pipe handling">
+                                <img src="./assets/Karthi/3D Path Trajectory.png" alt="3D visualization of minimum-jerk trajectory for PVC pipe handling">
                                 <p><em>Figure 5.4: 3D minimum-jerk trajectory showing smooth path through pickup, water bath, mold, and home positions</em></p>
                             </div>
                         </div>
